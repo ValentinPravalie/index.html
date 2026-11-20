@@ -110,9 +110,9 @@
   #toast.show{transform:none;opacity:1}
 
   /* cursorul jocului se deseneaza SUB browser, asa ca desenam noi unul deasupra */
-  #cursor{position:fixed;left:0;top:0;width:22px;height:22px;pointer-events:none;z-index:99999;display:none;
+  #cursor{position:fixed;left:0;top:0;width:26px;height:26px;pointer-events:none;z-index:99999;display:none;
     transform:translate(-2px,-2px)}
-  #cursor svg{width:22px;height:22px;filter:drop-shadow(0 1px 2px rgba(0,0,0,.6))}
+  #cursor svg{width:26px;height:26px;filter:drop-shadow(0 1px 2px rgba(0,0,0,.6))}
   body.cef, body.cef *{cursor:none !important}
   #toast b{display:block;font-size:12px;color:var(--sub)}
 </style>
@@ -194,7 +194,10 @@ if(!HAS_CEF) document.body.classList.add("preview");
 else {
   document.body.classList.add("cef");
   const cur = document.getElementById("cursor");
-  document.addEventListener("mousemove", e=>{ cur.style.display="block"; cur.style.left=e.clientX+"px"; cur.style.top=e.clientY+"px"; });
+  // cursorul nostru e mereu deasupra telefonului (al jocului ramane dedesubt)
+  cur.style.display="block"; cur.style.left=(innerWidth/2)+"px"; cur.style.top=(innerHeight/2)+"px";
+  const mv = e=>{ cur.style.display="block"; cur.style.left=e.clientX+"px"; cur.style.top=e.clientY+"px"; };
+  ["mousemove","pointermove","mouseover","mousedown"].forEach(t=>window.addEventListener(t, mv, true));
 }
 
 function send(type, value){
@@ -379,5 +382,6 @@ if(HAS_CEF){
   setTimeout(()=>toast("Mesaje","Ana: Ne vedem la cazino la 9?"), 1500);
 }
 </script>
+<div style="position:fixed;left:6px;bottom:4px;font-size:10px;opacity:.5;color:#fff">telefon v3</div>
 </body>
 </html>
