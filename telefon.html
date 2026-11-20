@@ -322,6 +322,8 @@ function openPhone(){
 function closePhone(notify){
   document.getElementById("phone").classList.remove("open");
   if(notify) setTimeout(()=>send("close"), 250);
+  // eliberam singuri cursorul/tastatura, chiar daca serverul nu primeste evenimentul
+  if(HAS_CEF) setTimeout(()=>{ try{ cef.set_focus(false); cef.hide(true); }catch(e){} }, 300);
 }
 // click in afara telefonului = inchide
 document.addEventListener("mousedown", e=>{
@@ -358,6 +360,7 @@ setInterval(tick, 1000); tick();
 if(HAS_CEF){
   // date: nume|numar|cash|banca|necitite|tema|fundal
   cef.on("phone:open", (data)=>{
+    gotData = true;
     const p = String(data).split("|");
     D.name=p[0]; D.number=p[1]; D.money=+p[2]; D.bank=+p[3]; D.unread=+p[4]; D.theme=+(p[5]||0)%4; D.wall=+(p[6]||0)%4;
     applyLook(); build(); openPhone();
@@ -366,7 +369,10 @@ if(HAS_CEF){
   cef.on("phone:notify", (app, text)=>toast(app, text));
   // pagina s-a incarcat: aratam telefonul imediat si cerem datele de la server
   build(); applyLook(); openPhone();
-  cef.emit("phone:ready", "1");
+  // anuntam serverul ca pagina e gata (repetam pana primim datele)
+  let gotData = false, tries = 0;
+  const ping = ()=>{ if(gotData || tries++ >= 15) return; try{ cef.emit("phone:ready", "1"); }catch(e){} setTimeout(ping, 1000); };
+  setTimeout(ping, 300);
 } else {
   // previzualizare in browser
   build(); applyLook(); openPhone();
