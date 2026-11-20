@@ -108,23 +108,45 @@ tr.sel td{background:rgba(255,176,32,.12)}
 tbody tr{cursor:pointer} tbody tr:hover td{background:rgba(255,255,255,.04)}
 .dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px}
 
-/* login */
-#login{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
-  background:radial-gradient(circle at 20% 20%,rgba(61,139,255,.35),transparent 50%),radial-gradient(circle at 80% 80%,rgba(255,77,94,.3),transparent 50%),rgba(6,8,14,.82);backdrop-filter:blur(6px)}
-#login .box{width:420px;background:rgba(16,19,27,.9);border:1px solid var(--line);border-radius:28px;padding:34px;box-shadow:0 30px 90px rgba(0,0,0,.6);animation:pop .4s}
-#login .brand{font-size:40px;font-weight:900;font-style:italic;text-align:center}
-#login .brand span{color:var(--red)} #login .brand i{color:var(--blue)}
-#login .hi{text-align:center;color:var(--sub);margin:6px 0 24px}
-#login .hi b{color:var(--accent)}
-#login label{display:block;font-size:12px;color:var(--sub);margin:12px 0 6px}
-#login .err{color:var(--red);font-size:13px;min-height:18px;margin-top:10px;text-align:center}
-#login button.pri{width:100%;margin-top:16px;padding:13px;font-size:15px}
+/* login nou */
+#login{position:fixed;inset:0;display:flex;background:#05070c;overflow:hidden}
+#login .hero{flex:1.25;position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;padding:56px}
+#login .sky{position:absolute;inset:0;background:linear-gradient(180deg,#0b1a3a 0%,#3a1c4d 45%,#c4486b 72%,#ffb35c 100%)}
+#login .sun{position:absolute;left:50%;bottom:24%;width:260px;height:260px;margin-left:-130px;border-radius:50%;background:radial-gradient(circle,#ffe2a3,#ff9a5a 60%,transparent 70%);filter:blur(2px);animation:sun 9s ease-in-out infinite alternate}
+@keyframes sun{to{transform:translateY(18px)}}
+#login .city{position:absolute;left:0;right:0;bottom:0;height:46%}
+#login .city svg{width:100%;height:100%}
+#login .glow{position:absolute;inset:0;background:linear-gradient(90deg,transparent 60%,#05070c);pointer-events:none}
+#login .hero h1{position:relative;font-size:84px;font-weight:900;font-style:italic;line-height:.9;text-shadow:0 10px 40px rgba(0,0,0,.6)}
+#login .hero h1 span{color:var(--red)} #login .hero h1 i{color:#6aa8ff}
+#login .hero p{position:relative;font-size:18px;color:#f0e6ff;margin:10px 0 22px;max-width:520px;text-shadow:0 2px 8px rgba(0,0,0,.6)}
+#login .chips{position:relative;display:flex;gap:10px;flex-wrap:wrap}
+#login .chips div{background:rgba(0,0,0,.45);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.15);padding:9px 14px;border-radius:14px;font-size:13px;font-weight:600}
+#login .chips b{color:var(--accent)}
+#login .side{width:500px;display:flex;align-items:center;justify-content:center;padding:40px;background:radial-gradient(circle at 70% 10%,rgba(61,139,255,.18),transparent 60%),#05070c}
+#login .box{width:100%;animation:pop .45s}
+#login .hello{font-size:28px;font-weight:800} #login .hello b{color:var(--accent)}
+#login .sub{color:var(--sub);margin:6px 0 22px}
+#login label{display:block;font-size:12px;color:var(--sub);margin:14px 0 6px;font-weight:600;letter-spacing:.4px;text-transform:uppercase}
+#login .pw{position:relative} #login .pw input{padding-right:46px;height:50px;font-size:16px;border-radius:14px}
+#login .pw .eye{position:absolute;right:8px;top:8px;width:34px;height:34px;border:none;background:transparent;padding:0;font-size:18px}
+#login .err{color:var(--red);font-size:13px;min-height:18px;margin-top:10px}
+#login .warn{color:var(--accent);font-size:12px;margin-top:6px;min-height:15px}
+#login button.big{width:100%;margin-top:16px;padding:15px;font-size:16px;border-radius:14px;background:linear-gradient(90deg,#ffb020,#ff6b3d);color:#1a0d00;border:none}
+#login .steps{display:flex;gap:8px;margin-bottom:22px}
+#login .steps div{flex:1;height:5px;border-radius:3px;background:rgba(255,255,255,.1)} #login .steps div.on{background:var(--accent)}
+#login .str{height:6px;border-radius:4px;background:rgba(255,255,255,.08);margin-top:8px;overflow:hidden} #login .str div{height:100%;transition:.3s}
+#login .row2{display:flex;gap:10px} #login .row2>*{flex:1}
+#login .foot{margin-top:18px;text-align:center;font-size:12px;color:var(--sub)}
+#login .foot a{color:var(--sub);text-decoration:underline;cursor:pointer}
 .skins{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
-.skin{height:86px;border-radius:14px;background:var(--bg2);border:2px solid transparent;display:flex;align-items:flex-end;justify-content:center;overflow:hidden;cursor:pointer;position:relative;font-size:11px;color:var(--sub)}
+.skin{height:96px;border-radius:14px;background:var(--bg2);border:2px solid transparent;display:flex;align-items:flex-end;justify-content:center;overflow:hidden;cursor:pointer;position:relative;font-size:11px;color:var(--sub)}
 .skin img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
-.skin.on{border-color:var(--accent)}
+.skin.on{border-color:var(--accent);background:rgba(255,176,32,.1)}
 .gend{display:flex;gap:8px;margin-bottom:8px} .gend button{flex:1}
 .gend button.on{background:var(--accent);color:#1a1300}
+.sum{background:var(--bg2);border-radius:16px;padding:14px;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.sum small{display:block;color:var(--sub);font-size:11px}
 
 /* inventar */
 .inv{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
@@ -317,6 +339,58 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
 /* tutorial */
 #tut{position:fixed;left:24px;top:110px;width:330px;background:var(--bg);border:1px solid rgba(255,176,32,.4);border-radius:18px;padding:14px 16px;box-shadow:0 10px 30px rgba(0,0,0,.4);animation:nin .4s}
 #tut .dots{display:flex;gap:5px;margin:8px 0} #tut .dots i{flex:1;height:5px;border-radius:3px;background:rgba(255,255,255,.12)} #tut .dots i.on{background:var(--accent)}
+
+/* calendar */
+.cal{display:grid;grid-template-columns:repeat(10,1fr);gap:8px}
+.cd{height:92px;border-radius:14px;background:var(--bg2);border:1px solid var(--line);display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:11px;text-align:center;position:relative}
+.cd .n{position:absolute;top:5px;left:8px;font-size:10px;color:var(--sub);font-weight:700}
+.cd .e{font-size:26px;margin-bottom:3px}
+.cd.done{opacity:.45} .cd.done:after{content:"✓";position:absolute;top:4px;right:7px;color:var(--green);font-weight:900}
+.cd.today{border:2px solid var(--accent);box-shadow:0 0 18px rgba(255,176,32,.35);animation:pulse 1.4s infinite}
+.cd.big{background:linear-gradient(160deg,rgba(255,215,0,.25),rgba(255,95,162,.15))}
+@keyframes pulse{50%{box-shadow:0 0 4px rgba(255,176,32,.2)}}
+/* roata */
+.wh2{width:340px;height:340px;border-radius:50%;position:relative;border:10px solid #2a2f3d;box-shadow:0 0 0 4px var(--accent),0 20px 60px rgba(0,0,0,.5)}
+.wh2 .in{position:absolute;inset:0;border-radius:50%;transition:transform 5s cubic-bezier(.12,.75,.18,1)}
+.wh2 .lb{position:absolute;left:50%;top:0;height:50%;transform-origin:bottom center;padding-top:14px;font-size:12px;font-weight:800;text-align:center;width:70px;margin-left:-35px;text-shadow:0 1px 3px rgba(0,0,0,.6)}
+.wh2 .ptr{position:absolute;left:50%;top:-22px;transform:translateX(-50%);border-left:15px solid transparent;border-right:15px solid transparent;border-top:30px solid var(--accent);z-index:3;filter:drop-shadow(0 2px 4px #000)}
+.wh2 .hub{position:absolute;inset:40%;border-radius:50%;background:#14171f;border:4px solid var(--accent);z-index:2;display:flex;align-items:center;justify-content:center;font-size:26px}
+/* evenimente */
+.ev{display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;background:var(--bg2);margin-bottom:8px}
+.ev .e{font-size:26px;width:40px;text-align:center} .ev .t{flex:1} .ev .cd2{font-family:Consolas,monospace;font-size:18px;font-weight:800}
+.ev.live{border:1px solid var(--green);background:rgba(51,209,122,.1)}
+/* garaj */
+.cars2{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.car2{border-radius:18px;background:var(--bg2);border:1px solid var(--line);overflow:hidden}
+.car2 .im{height:110px;background:linear-gradient(180deg,#1d2433,#11151d);display:flex;align-items:center;justify-content:center;position:relative}
+.car2 .im img{max-width:90%;max-height:100px}
+.car2 .im .pl{position:absolute;bottom:6px;left:8px;background:#fff;color:#000;font-weight:800;font-size:11px;padding:2px 7px;border-radius:5px;border-left:6px solid #1e4fd6}
+.car2 .b{padding:12px} .car2 .b b{font-size:15px}
+.car2 .acts{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:10px} .car2 .acts button{padding:7px;font-size:12px}
+/* top */
+.podium{display:flex;align-items:flex-end;justify-content:center;gap:14px;margin-bottom:16px}
+.podium div{width:150px;border-radius:16px 16px 6px 6px;text-align:center;padding:10px;position:relative;overflow:hidden}
+.podium .ph{height:110px;position:relative} .podium .ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
+/* noutati */
+.post{border-radius:18px;overflow:hidden;background:var(--bg2);margin-bottom:12px}
+.post img.cv{width:100%;max-height:260px;object-fit:cover;display:block}
+.post .b{padding:14px 16px}
+/* blackjack */
+.felt{border-radius:24px;background:radial-gradient(ellipse at center,#1f7a45,#0f4a29 70%);padding:22px;min-height:380px;position:relative;box-shadow:inset 0 0 60px rgba(0,0,0,.5)}
+.hand{display:flex;gap:10px;justify-content:center;min-height:132px;margin:8px 0}
+.pc{width:88px;height:126px;border-radius:10px;background:#fff;color:#111;position:relative;box-shadow:0 6px 16px rgba(0,0,0,.45);animation:deal .35s ease;font-weight:800}
+.pc.r{color:#c0141c}
+.pc .tl{position:absolute;top:6px;left:8px;font-size:18px;line-height:1;text-align:center}
+.pc .br{position:absolute;bottom:6px;right:8px;font-size:18px;line-height:1;transform:rotate(180deg);text-align:center}
+.pc .c{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:44px}
+.pc.back{background:repeating-linear-gradient(45deg,#b3122b 0 8px,#8d0d21 8px 16px);border:4px solid #fff}
+@keyframes deal{from{transform:translateY(-60px) rotate(-8deg);opacity:0}}
+.lbl{text-align:center;font-weight:700;color:#d8f3e2}
+.lbl b{background:rgba(0,0,0,.35);padding:2px 10px;border-radius:8px;margin-left:6px}
+.bjres{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:34px;font-weight:900;text-shadow:0 4px 20px rgba(0,0,0,.6);text-align:center;color:#ffd23d;pointer-events:none;animation:pop .3s}
+.chips2{display:flex;gap:8px;justify-content:center}
+.chip{width:58px;height:58px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:12px;cursor:pointer;border:5px dashed rgba(255,255,255,.7);box-shadow:0 4px 10px rgba(0,0,0,.4)}
+.chip:hover{transform:translateY(-3px)}
 </style>
 </head>
 <body>
@@ -488,39 +562,83 @@ const MODS = {}, UPD = {};
 
 /* ===================== LOGIN / REGISTER ===================== */
 const SK_M = [7,15,20,23,29,46,60,101], SK_F = [12,13,41,55,56,69,91,93];
-let regSkin = 7, regGender = 0;
+const ORIG = ["Bucuresti","Cluj","Iasi","Timisoara","Constanta","Brasov","Chisinau","Los Santos","San Fierro","Las Venturas"];
+let REG = {step:1, pass:"", gender:0, skin:7, age:25, origin:0};
 function skinImg(id){ return '<img src="https://assets.open.mp/assets/images/skins/'+id+'.png" onerror="this.remove()">'; }
+const CITY = '<svg viewBox="0 0 1000 300" preserveAspectRatio="none"><g fill="#0a0f1e">'+
+  [[0,170,60],[55,120,45],[95,190,70],[160,90,40],[195,140,60],[250,60,38],[285,150,55],[335,110,70],[400,40,46],[440,130,60],[495,175,50],[540,80,56],[590,150,48],[632,30,40],[668,120,64],[728,160,46],[770,95,58],[824,140,50],[870,70,44],[910,155,90]]
+  .map(b=>'<rect x="'+b[0]+'" y="'+b[1]+'" width="'+b[2]+'" height="'+(300-b[1])+'"/>').join("")+'</g><g fill="#ffd27a" opacity=".55">'+
+  Array.from({length:90},(_,i)=>'<rect x="'+((i*97)%990)+'" y="'+(180+((i*53)%110))+'" width="4" height="6"/>').join("")+'</g></svg>';
 MODS.login = function(d){
-  const p = d.split("|");             // mod|nume|server|eroare
+  const p = d.split("|");             // mod|nume|server|eroare|online|max
   const mode = +p[0];
   if(mode===0){ MOD=null; root.innerHTML=""; setFocus(false); return; }
-  const reg = mode===2;
-  let skins = "";
-  if(reg){
-    const list = regGender ? SK_F : SK_M;
-    if(!list.includes(regSkin)) regSkin = list[0];
-    skins = '<label>Alege-ti personajul</label><div class="gend"><button class="'+(regGender?"":"on")+'" onclick="regGender=0;MODS.login(LAST_LOGIN)">👨 Barbat</button><button class="'+(regGender?"on":"")+'" onclick="regGender=1;MODS.login(LAST_LOGIN)">👩 Femeie</button></div><div class="skins">'+
-      list.map(id=>'<div class="skin'+(id===regSkin?" on":"")+'" onclick="regSkin='+id+';MODS.login(LAST_LOGIN)">'+skinImg(id)+'#'+id+'</div>').join("")+'</div>';
+  const reg = mode===2, name = esc(p[1]);
+  const hero = '<div class="hero"><div class="sky"></div><div class="sun"></div><div class="city">'+CITY+'</div><div class="glow"></div>'+
+    '<h1>RPG<span>.</span><i>RO</i></h1><p>Los Santos te asteapta. Joburi, factiuni, case, masini, clanuri si evenimente in fiecare seara.</p>'+
+    '<div class="chips"><div>🟢 <b>'+(p[4]||"?")+'</b> / '+(p[5]||"?")+' jucatori online</div><div>🎁 Calendar zilnic</div><div>🎡 Roata norocului</div><div>🏆 Battle Pass</div></div></div>';
+  let box;
+  if(!reg){
+    box = '<div class="hello">Bine ai revenit,<br><b>'+name+'</b></div><div class="sub">Scrie parola ca sa intri in oras.</div>'+
+      '<label>Parola</label><div class="pw"><input id="lg-pass" type="password" maxlength="24" autocomplete="off"><button class="eye" onclick="togglePw(\'lg-pass\')">👁️</button></div>'+
+      '<div class="warn" id="lg-caps"></div><div class="err" id="lg-err">'+esc(p[3]||"")+'</div>'+
+      '<button class="big" onclick="doLogin(1)">Intra in joc  →</button>'+
+      '<div class="foot">Ti-ai uitat parola? Scrie-ne pe Discord.<br><a onclick="emit(\'ui:login\',\'#clasic#\')">Probleme? Foloseste fereastra clasica</a></div>';
+  } else {
+    const st = REG.step;
+    const steps = '<div class="steps">'+[1,2,3].map(i=>'<div class="'+(i<=st?"on":"")+'"></div>').join("")+'</div>';
+    if(st===1){
+      box = steps+'<div class="hello">Bun venit, <b>'+name+'</b>!</div><div class="sub">Pasul 1 din 3 · Alege o parola pentru contul tau</div>'+
+        '<label>Parola (6-24 caractere)</label><div class="pw"><input id="lg-pass" type="password" maxlength="24" value="'+esc(REG.pass)+'" oninput="pwStr()"><button class="eye" onclick="togglePw(\'lg-pass\')">👁️</button></div><div class="str"><div id="pw-s"></div></div>'+
+        '<label>Confirma parola</label><div class="pw"><input id="lg-pass2" type="password" maxlength="24" value="'+esc(REG.pass)+'"></div>'+
+        '<div class="warn" id="lg-caps"></div><div class="err" id="lg-err">'+esc(p[3]||"")+'</div><button class="big" onclick="regNext(1)">Mai departe  →</button>';
+    } else if(st===2){
+      const list = REG.gender ? SK_F : SK_M; if(!list.includes(REG.skin)) REG.skin = list[0];
+      box = steps+'<div class="hello">Creeaza-ti personajul</div><div class="sub">Pasul 2 din 3 · Cum arata si de unde vine</div>'+
+        '<div class="gend"><button class="'+(REG.gender?"":"on")+'" onclick="REG.gender=0;MODS.login(LAST_LOGIN)">👨 Barbat</button><button class="'+(REG.gender?"on":"")+'" onclick="REG.gender=1;MODS.login(LAST_LOGIN)">👩 Femeie</button></div>'+
+        '<div class="skins">'+list.map(id=>'<div class="skin'+(id===REG.skin?" on":"")+'" onclick="REG.skin='+id+';MODS.login(LAST_LOGIN)">'+skinImg(id)+'#'+id+'</div>').join("")+'</div>'+
+        '<div class="row2"><div><label>Varsta: <b id="ag">'+REG.age+'</b> ani</label><input type="range" min="18" max="70" value="'+REG.age+'" oninput="REG.age=+this.value;$(\'#ag\').textContent=this.value" style="margin-top:14px"></div>'+
+        '<div><label>Orasul natal</label><select onchange="REG.origin=+this.value">'+ORIG.map((o,i)=>'<option value="'+i+'"'+(i===REG.origin?" selected":"")+'>'+o+'</option>').join("")+'</select></div></div>'+
+        '<div class="row2" style="margin-top:16px"><button onclick="REG.step=1;MODS.login(LAST_LOGIN)">← Inapoi</button><button class="pri" onclick="REG.step=3;MODS.login(LAST_LOGIN)">Mai departe →</button></div>';
+    } else {
+      box = steps+'<div class="hello">Totul e gata!</div><div class="sub">Pasul 3 din 3 · Verifica si intra in oras</div>'+
+        '<div style="display:flex;gap:14px;align-items:center"><div class="skin on" style="width:110px;height:150px;flex-shrink:0">'+skinImg(REG.skin)+'</div><div class="sum" style="flex:1">'+
+        '<div><small>Nume</small><b>'+name+'</b></div><div><small>Sex</small><b>'+(REG.gender?"Femeie":"Barbat")+'</b></div><div><small>Varsta</small><b>'+REG.age+' ani</b></div><div><small>Oras natal</small><b>'+ORIG[REG.origin]+'</b></div></div></div>'+
+        '<div class="err" id="lg-err">'+esc(p[3]||"")+'</div>'+
+        '<div class="row2"><button onclick="REG.step=2;MODS.login(LAST_LOGIN)">← Inapoi</button><button class="big" style="margin-top:0" onclick="doLogin(2)">Creeaza contul ✓</button></div>'+
+        '<div class="foot">Primesti la start: tutorial cu premiu de $5.000 si o lada.</div>';
+    }
+    if(p[3] && st===3 && REG.sent){ REG.step=1; REG.sent=false; }   // eroare de la server: inapoi la parola
   }
-  root.innerHTML = '<div id="login"><div class="box"><div class="brand">RPG<span>.</span><i>RO</i></div>'+
-    '<div class="hi">'+(reg?"Bine ai venit, ":"Bine ai revenit, ")+'<b>'+esc(p[1])+'</b>!<br>'+(reg?"Contul tau nu exista. Alege o parola (6-24 caractere).":"Scrie parola ca sa intri in joc.")+'</div>'+
-    '<label>Parola</label><input id="lg-pass" type="password" maxlength="24" autocomplete="off">'+
-    (reg?'<label>Confirma parola</label><input id="lg-pass2" type="password" maxlength="24">':"")+skins+
-    '<div class="err" id="lg-err">'+esc(p[3]||"")+'</div>'+
-    '<button class="pri" onclick="doLogin('+mode+')">'+(reg?"Creeaza contul":"Intra in joc")+'</button>'+
-    '<div class="muted" style="text-align:center;font-size:12px;margin-top:14px">ENTER = '+(reg?"inregistrare":"logare")+'</div><div style="text-align:center;margin-top:8px"><a style="color:var(--sub);font-size:11px;text-decoration:underline;cursor:pointer" onclick="emit(\'ui:login\',\'#clasic#\')">Probleme? Foloseste fereastra clasica</a></div></div></div>';
-  const inp = $("#lg-pass"); setTimeout(()=>inp && inp.focus(), 50);
-  root.querySelectorAll("input").forEach(i=>i.addEventListener("keydown", e=>{ if(e.key==="Enter") doLogin(mode); }));
+  root.innerHTML = '<div id="login">'+hero+'<div class="side"><div class="box">'+box+'</div></div></div>';
+  const inp = $("#lg-pass"); if(inp) setTimeout(()=>inp.focus(), 50);
+  root.querySelectorAll("input").forEach(i=>{
+    i.addEventListener("keydown", e=>{ if(e.key==="Enter"){ if(!reg) doLogin(1); else if(REG.step===1) regNext(1); } });
+    i.addEventListener("keyup", e=>{ const c=$("#lg-caps"); if(c && e.getModifierState) c.textContent = e.getModifierState("CapsLock") ? "⚠️ Caps Lock e pornit" : ""; });
+  });
+  if(reg && REG.step===1) pwStr();
 };
 let LAST_LOGIN = "";
+function togglePw(id){ const i=$("#"+id); if(i) i.type = i.type==="password" ? "text" : "password"; }
+function pwStr(){ const v=($("#lg-pass")||{}).value||"", e=$("#pw-s"); if(!e) return;
+  let sc=0; if(v.length>=6) sc++; if(v.length>=10) sc++; if(/[0-9]/.test(v)) sc++; if(/[A-Z]/.test(v)&&/[a-z]/.test(v)) sc++; if(/[^A-Za-z0-9]/.test(v)) sc++;
+  e.style.width=(sc*20)+"%"; e.style.background=["#ff4d5e","#ff4d5e","#ffb020","#ffd23d","#33d17a","#33d17a"][sc]; }
+function regNext(){
+  const a=$("#lg-pass").value, b=$("#lg-pass2").value;
+  if(a.length<6 || a.length>24){ $("#lg-err").textContent="Parola trebuie sa aiba intre 6 si 24 de caractere."; return; }
+  if(a!==b){ $("#lg-err").textContent="Parolele nu se potrivesc."; return; }
+  if(a.indexOf("|")>=0){ $("#lg-err").textContent="Parola nu poate contine caracterul |"; return; }
+  REG.pass=a; REG.step=2; MODS.login(LAST_LOGIN);
+}
 function doLogin(mode){
+  if(mode===2){
+    REG.sent = true;
+    emit("ui:register", REG.pass+"|"+REG.skin+"|"+REG.age+"|"+REG.origin);
+    const e=$("#lg-err"); if(e) e.textContent="Se creeaza contul..."; return;
+  }
   const a = $("#lg-pass").value;
   if(!a){ $("#lg-err").textContent = "Scrie parola."; return; }
-  if(mode===2){
-    if(a.length<6 || a.length>24){ $("#lg-err").textContent = "Parola trebuie sa aiba intre 6 si 24 de caractere."; return; }
-    if(a !== $("#lg-pass2").value){ $("#lg-err").textContent = "Parolele nu se potrivesc."; return; }
-    emit("ui:register", a.replace(/\|/g,"")+"|"+regSkin);
-  } else emit("ui:login", a);
+  emit("ui:login", a);
   $("#lg-err").textContent = "Se verifica...";
 }
 
@@ -1045,7 +1163,7 @@ function showCard(d){
   const yn = v=>v==="1"?'<b style="color:#138a3e">DA</b>':'<b style="color:#c0141c">NU</b>';
   $("#cardroot").innerHTML = '<div id="card" class="'+(lic?"lic":"")+'"><div style="display:flex;justify-content:space-between;margin-bottom:10px"><b>'+(lic?"PERMISE · LOS SANTOS":"CARTE DE IDENTITATE")+'</b><b>🇷🇴 RPG.RO</b></div><div class="row"><div class="ph">'+skinImg(p[7])+'</div><div style="flex:1;display:grid;gap:6px">'+
     '<div><small>Nume</small><b>'+esc(p[1])+'</b></div>'+(lic?'<div><small>Permis auto</small>'+yn(p[4])+'</div><div><small>Port-arma</small>'+yn(p[5])+'</div>'
-      :'<div><small>Telefon</small><b>'+esc(p[3])+'</b></div><div><small>Ocupatie</small><b>'+esc(p[6])+'</b></div><div><small>Level · ore in oras</small><b>'+p[2]+' · '+p[8]+'h</b></div>')+'</div></div></div>';
+      :'<div><small>Telefon</small><b>'+esc(p[3])+'</b></div><div><small>Ocupatie</small><b>'+esc(p[6])+'</b></div>'+(+p[9]>0?'<div><small>Varsta · oras natal</small><b>'+p[9]+' ani · '+esc(p[10]||"")+'</b></div>':'<div><small>Level · ore in oras</small><b>'+p[2]+' · '+p[8]+'h</b></div>'))+'</div></div></div>';
   clearTimeout(window._cardt); window._cardt = setTimeout(()=>{ $("#cardroot").innerHTML=""; }, 8000);
 }
 
@@ -1072,6 +1190,174 @@ function tutorial(d){
   const n=+p[0], tot=+p[1];
   el.classList.remove("hidden");
   el.innerHTML = '<div style="display:flex;justify-content:space-between"><b class="gold">🎓 Tutorial</b><span class="muted">pasul '+n+' / '+tot+'</span></div><div class="dots">'+Array.from({length:tot},(_,i)=>'<i class="'+(i<n?"on":"")+'"></i>').join("")+'</div><b style="font-size:15px">'+esc(p[2])+'</b><div style="font-size:13px;color:#d8dde6;margin-top:4px">'+esc(p[3])+'</div><div class="muted" style="font-size:11px;margin-top:6px">Premiu: $5.000 + Lada de Bronz · /tutorial opreste</div>';
+}
+
+
+/* ===================== CALENDAR ===================== */
+const RW_E = ["💵","💎","🎁","⭐"];
+const CRN = ["Bronz","Argint","Aur"];
+function rwTxt(t,v){ t=+t; v=+v; return t===0?fmt(v):t===1?v+" Emeralde":t===2?"Lada "+CRN[v]:v+" respect"; }
+MODS.calendar = function(d){
+  const [h, s] = d.split("#"), p = h.split("|"), next=+p[0], can=p[1]==="1";
+  const days = rows(s);
+  root.innerHTML = shell("📅","linear-gradient(135deg,#ffb020,#ff5fa2)","Calendar zilnic","Intra in fiecare zi - daca pierzi o zi, o iei de la capat",
+    '<div class="cal">'+days.map((x,i)=>{ const n=i+1, done = can ? n<next : n<=next, today = can && n===next;
+      return '<div class="cd'+(done?" done":"")+(today?" today":"")+(n%7===0||n===30?" big":"")+'"><span class="n">'+n+'</span><div class="e">'+(RW_E[+x[0]]||"🎁")+'</div>'+rwTxt(x[0],x[1])+'</div>'; }).join("")+'</div>',
+    '<span class="muted" style="margin-right:auto">'+(can?"Ziua "+next+" te asteapta!":"Ai luat premiul de azi. Revino maine pentru ziua "+(next>=30?1:next+1)+".")+'</span>'+
+    (can?'<button class="pri" onclick="act(\'calendar\',\'claim\')">🎁 Ia premiul zilei '+next+'</button>':'<button onclick="closeMod(true)">Inchide</button>'));
+};
+
+/* ===================== ROATA ===================== */
+let WH = {rot:0, busy:false};
+const WCOL = ["#ff4d5e","#3d8bff","#33d17a","#ffb020","#a66cff","#ff5fa2","#00c2c7","#ff8c00","#ffd700","#7bd389","#6a7bff","#e05cff"];
+MODS.wheel = function(d){ WH.busy=false; drawWheel(d); };
+function drawWheel(d){
+  WH.d = d;
+  const [h, s] = d.split("#"), p = h.split("|"), free=p[0]==="1", pp=+p[1], cost=+p[2];
+  const segs = rows(s); WH.segs = segs; const n = segs.length, a = 360/n;
+  const grad = segs.map((x,i)=>WCOL[i%WCOL.length]+" "+(i*a)+"deg "+((i+1)*a)+"deg").join(",");
+  const labels = segs.map((x,i)=>'<div class="lb" style="transform:rotate('+(i*a+a/2)+'deg)">'+(RW_E[+x[0]]||"")+'<br>'+(+x[0]===0&&+x[1]>=10000?"JACKPOT":rwTxt(x[0],x[1]).replace(" Emeralde","💎").replace("Lada ",""))+'</div>').join("");
+  root.innerHTML = shell("🎡","linear-gradient(135deg,#ff4d5e,#ffb020)","Roata norocului","O rotire gratis in fiecare zi · jackpot $10.000",
+    '<div style="display:flex;gap:30px;align-items:center;justify-content:center"><div class="wh2"><div class="ptr"></div><div class="in" id="wh-in" style="background:conic-gradient('+grad+');transform:rotate('+WH.rot+'deg)">'+labels+'</div><div class="hub">🎡</div></div>'+
+    '<div style="width:260px"><div class="stat" style="margin-bottom:10px"><small>Emeraldele tale</small><b>💎 '+pp+'</b></div>'+
+    '<button class="pri" style="width:100%;padding:14px;font-size:16px" id="wh-go" '+(free?"":"disabled")+' onclick="whSpin(\'spin\')">'+(free?"🎁 Invarte GRATIS":"Ai folosit rotirea de azi")+'</button>'+
+    '<button style="width:100%;margin-top:8px" id="wh-x" onclick="whSpin(\'extra\')">Inca o rotire (💎 '+cost+')</button><div class="result" id="wh-r"></div></div></div>',"");
+}
+function whSpin(k){ if(WH.busy) return; WH.busy=true; $("#wh-go").disabled=true; $("#wh-x").disabled=true; act("wheel",k); }
+UPD.wheel = function(d){
+  if(d==="err"){ WH.busy=false; drawWheel(WH.d); return; }
+  if(d.startsWith("data#")){ const r=$("#wh-r") ? $("#wh-r").innerHTML : ""; drawWheel(d.slice(5)); $("#wh-r").innerHTML=r; return; }
+  const p = d.split("|");
+  if(p[0]==="spin"){
+    const seg=+p[1], n=WH.segs.length, a=360/n;
+    WH.rot = WH.rot - (WH.rot%360) + 360*7 + (360 - (seg*a + a/2));
+    $("#wh-in").style.transform = "rotate("+WH.rot+"deg)";
+    setTimeout(()=>{ WH.busy=false; const x=WH.segs[seg]; const r=$("#wh-r"); if(r) r.innerHTML='<span class="money">Ai castigat '+rwTxt(x[0],x[1])+'!</span>'; }, 5100);
+  }
+};
+
+/* ===================== PROGRAM EVENIMENTE ===================== */
+const H24 = Array.from({length:24},(_,i)=>i);
+const EVS = [
+  {n:"Concurs in chat",e:"❓",d:"Primul care raspunde castiga",o:H24.flatMap(h=>[7,22,37,52].map(m=>({h,m})))},
+  {n:"Eveniment surpriza",e:"🎉",d:"Lada aruncata / cursa / vanatoare",o:H24.map(h=>({h,m:30}))},
+  {n:"Last Man Standing",e:"🔫",d:"La fiecare 2 ore",o:H24.filter(h=>h%2===0).map(h=>({h,m:15}))},
+  {n:"Boss in port",e:"👹",d:"La fiecare 3 ore · /boss",o:H24.filter(h=>h%3===0).map(h=>({h,m:0}))},
+  {n:"Happy Hour",e:"⚡",d:"Bani si XP in plus · 19:00-20:00",o:[{h:19,m:0,len:60}]},
+  {n:"Ora de Razboi",e:"⚔️",d:"Clanuri: /war fara cooldown, premii duble",o:[{h:20,m:0,len:60}]},
+  {n:"Extragere Loto",e:"🎟️",d:"In fiecare seara · /loto",o:[{h:21,m:0}]},
+  {n:"Turneu de dueluri",e:"🥊",d:"Inscrieri la 21:30 · /turneu",o:[{h:21,m:30}]},
+  {n:"Loteria saptamanala",e:"💰",d:"Duminica · /bilet",o:[{h:20,m:0,wd:0}]},
+  {n:"Premii top saptamanal",e:"🏆",d:"Duminica · /topweek",o:[{h:21,m:0,wd:0}]}
+];
+let EVT = null;
+MODS.events = function(d){
+  const p = d.split("|").map(Number), base = Date.now(), sod0 = p[0]*3600 + p[1]*60 + p[2], wd0 = p[3];
+  const f = t=>{ const hh=Math.floor(t/3600), mm=Math.floor(t%3600/60), ss=t%60; return (hh?hh+"h ":"")+String(mm).padStart(2,"0")+":"+String(ss).padStart(2,"0"); };
+  const draw = ()=>{
+    const b = $("#ev-b"); if(!b){ clearInterval(EVT); return; }
+    const el = Math.floor((Date.now()-base)/1000), tot = sod0 + el, sod = tot % 86400, wd = (wd0 + Math.floor(tot/86400)) % 7;
+    const items = EVS.map(e=>{
+      let best = Infinity, live = false;
+      for(let dd=0; dd<8; dd++) e.o.forEach(o=>{
+        if(o.wd!==undefined && (wd+dd)%7!==o.wd) return;
+        const t = dd*86400 + o.h*3600 + o.m*60 - sod;
+        if(o.len && t<=0 && -t < o.len*60) live = true;
+        if(t>0 && t<best) best = t;
+      });
+      return {e, best, live};
+    }).sort((a,b)=>(b.live-a.live)||(a.best-b.best));
+    b.innerHTML = items.map(x=>'<div class="ev'+(x.live?" live":"")+'"><div class="e">'+x.e.e+'</div><div class="t"><b>'+x.e.n+'</b><div class="muted" style="font-size:12px">'+x.e.d+'</div></div><div class="cd2'+(x.live?" money":"")+'">'+(x.live?"ACUM":"in "+f(x.best))+'</div></div>').join("");
+  };
+  root.innerHTML = shell("🗓️","#3d8bff","Program evenimente","Ora serverului · se actualizeaza in timp real",'<div id="ev-b"></div>','<button onclick="act(\'events\',\'boss\')">👹 Unde e boss-ul?</button>');
+  clearInterval(EVT); draw(); EVT = setInterval(draw, 1000);
+};
+
+/* ===================== GARAJ ===================== */
+MODS.garage = function(d){ drawGarage(d); };
+UPD.garage = function(d){ drawGarage(d); };
+function drawGarage(d){
+  const [h, s] = d.split("#"), p = h.split("|"), cars = rows(s);
+  const st = ["<span class=\"muted\">Parcata</span>","<span class=\"money\">Spawnata</span>","<span class=\"gold\">La vanzare</span>"];
+  root.innerHTML = shell("🚘","#3d8bff","Garajul meu",cars.length+" / "+p[0]+" sloturi",
+    '<div class="cars2">'+cars.map(c=>'<div class="car2"><div class="im">'+vehImg(c[1])+'<span class="pl">'+esc(c[3])+'</span></div><div class="b"><b>'+esc(c[2])+'</b><div style="font-size:12px;margin-top:4px">'+st[+c[4]]+' · '+(+c[5]/1000).toFixed(1)+' km · ⛽ '+c[6]+'%'+(+c[8]>0?' · 🔧 tuning '+c[8]:'')+'</div>'+
+      '<div class="acts"><button onclick="act(\'garage\',\'spawn\','+c[0]+')">'+(+c[4]===1?"⏏ Despawn":"▶ Spawn")+'</button><button onclick="act(\'garage\',\'gps\','+c[0]+')">📍 GPS</button>'+
+      '<button onclick="act(\'garage\',\'lock\','+c[0]+')">'+(c[7]==="1"?"🔓 Descuie":"🔒 Incuie")+'</button><button class="red" onclick="gSell(this,'+c[0]+','+c[9]+')">💲 Vinde</button></div></div></div>').join("")+'</div>',"");
+}
+function gSell(b, i, v){ if(b.dataset.ok){ act("garage","sell",i); return; } b.dataset.ok=1; b.textContent="Sigur? "+fmt(v); }
+
+/* ===================== CLASAMENTE ===================== */
+let TP = {cat:0};
+MODS.top = function(d){ TP.cats = d.split(";"); TP.cat = 0; TP.rows = null; drawTop(); };
+UPD.top = function(d){ const [h,s]=d.split("#"); TP.cat=+h; TP.rows=rows(s); drawTop(); };
+function drawTop(){
+  const tabs = '<div class="tabs" style="flex-wrap:wrap">'+TP.cats.map((t,i)=>'<div class="'+(TP.cat===i?"on":"")+'" onclick="TP.cat='+i+';TP.rows=null;drawTop();act(\'top\',\'cat\','+i+')">'+esc(t)+'</div>').join("")+'</div>';
+  let body = '<div class="muted">Se incarca...</div>';
+  if(TP.rows){
+    const r = TP.rows, money = TP.cat===0, val = v=>money?fmt(v):Number(v).toLocaleString("ro-RO");
+    const pod = [1,0,2].filter(i=>r[i]).map(i=>'<div style="background:'+["linear-gradient(180deg,#ffd700,#a07800)","linear-gradient(180deg,#d9d9d9,#7d7d7d)","linear-gradient(180deg,#cd7f32,#6b3f12)"][i]+';height:'+[230,200,180][i]+'px"><div class="ph">'+skinImg(r[i][2])+'</div><b style="font-size:22px">'+(i+1)+'</b><div style="font-weight:700;font-size:13px">'+esc(r[i][0])+'</div><div style="font-size:12px">'+val(r[i][1])+'</div></div>').join("");
+    body = '<div class="podium">'+pod+'</div><table><tbody>'+r.slice(3).map((x,i)=>'<tr><td style="width:40px"><b>'+(i+4)+'</b></td><td>'+esc(x[0])+'</td><td style="text-align:right"><b>'+val(x[1])+'</b></td></tr>').join("")+'</tbody></table>';
+  }
+  root.innerHTML = shell("🏆","linear-gradient(135deg,#ffd700,#ff8c00)","Clasamente","Cei mai buni din oras",body,"",tabs);
+}
+
+/* ===================== RECOMANDARI ===================== */
+MODS.ref = function(d){
+  const [h, s] = d.split("#"), p = h.split("|"), list = rows(s), paid = list.filter(x=>x[2]==="1").length;
+  root.innerHTML = shell("🤝","#33d17a","Adu-ti prietenii","Fiecare prieten care ajunge la level 5: tu +100 Emeralde, el +50",
+    '<div class="grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:14px"><div class="stat"><small>Codul tau (numele tau)</small><b style="font-size:18px">'+esc(p[0])+'</b></div><div class="stat"><small>Prieteni adusi</small><b>'+list.length+'</b></div><div class="stat"><small>Emeralde castigate</small><b>💎 '+(paid*100)+'</b></div></div>'+
+    '<div class="card" style="margin-bottom:14px">📢 Spune-le prietenilor sa scrie <b class="gold">/ref '+esc(p[0])+'</b> cand intra pe server (pana la level 3).</div>'+
+    (p[1]==="1"?'<div class="card" style="margin-bottom:14px"><b>Cine te-a adus pe tine?</b><div style="display:flex;gap:8px;margin-top:8px"><input id="rf-n" placeholder="Nume_Prenume"><button class="pri" onclick="act(\'ref\',\'set\',$(\'#rf-n\').value)">Salveaza</button></div></div>':"")+
+    '<table><thead><tr><th>Prieten</th><th>Level</th><th>Premiu</th></tr></thead><tbody>'+list.map(x=>'<tr><td>'+esc(x[0])+'</td><td>'+x[1]+' / 5</td><td>'+(x[2]==="1"?'<span class="badge ok">primit</span>':'<span class="muted">la level 5</span>')+'</td></tr>').join("")+'</tbody></table>'+(list.length?"":'<div class="muted" style="margin-top:8px">Inca n-ai adus pe nimeni.</div>'),"");
+};
+
+/* ===================== PROFIL PUBLIC ===================== */
+MODS.profile = function(d){
+  const p = d.split("|");
+  const st = (k,v)=>'<div class="stat"><small>'+k+'</small><b style="font-size:17px">'+v+'</b></div>';
+  root.innerHTML = shell("👤","#a66cff","Profilul lui "+esc(p[0]),esc(p[1]),
+    '<div class="stcard"><div class="pic">'+skinImg(p[11])+'<b>ID '+p[13]+'</b></div><div style="flex:1"><h2 style="font-size:26px">'+esc(p[0])+'</h2><div class="gold" style="font-weight:700;margin-bottom:12px">'+esc(p[1])+(+p[12]>0?' · '+p[12]+' ani · din '+esc(p[14]):'')+'</div>'+
+    '<div class="grid" style="grid-template-columns:repeat(3,1fr)">'+st("Level",p[2])+st("Ore in oras",p[3])+st("Factiune",esc(p[4]))+st("Clan",esc(p[5]))+st("Casatorit cu",p[6]==="-"?"-":"💍 "+esc(p[6]))+st("Insigne","🏅 "+p[7]+" / 16")+st("Masini","🚗 "+p[8])+st("Battle Pass","Tier "+p[9])+st("VIP",esc(p[10]))+'</div></div></div>',"");
+};
+
+/* ===================== NOUTATI ===================== */
+MODS.news = function(d){
+  const posts = rows(d);
+  root.innerHTML = shell("📰","#ffd700","Noutati pe server","Ce s-a schimbat in oras",
+    posts.map((x,i)=>'<div class="post">'+(x[3]?'<img class="cv" src="'+esc(x[3])+'" onerror="this.remove()">':"")+'<div class="b">'+(i===0?'<span class="badge ok" style="margin-bottom:6px">NOU</span> ':'')+'<b style="font-size:18px">'+esc(x[1])+'</b><div style="margin:6px 0;line-height:1.5">'+esc(x[2])+'</div><div class="muted" style="font-size:11px">'+esc(x[4])+' · '+(+x[5]===0?"azi":"acum "+x[5]+" zile")+' · #'+x[0]+'</div></div></div>').join(""),
+    '<button class="pri" style="margin-left:auto" onclick="closeMod(true)">Am inteles</button>');
+};
+
+/* ===================== BLACKJACK ===================== */
+const SUIT = ["♣","♦","♥","♠"], RANK = ["A","2","3","4","5","6","7","8","9","10","J","Q","K"];
+let BJ = {bet:500};
+function card(c){
+  c=+c; if(c<0) return '<div class="pc back"></div>';
+  const r = RANK[c%13], su = SUIT[Math.floor(c/13)], red = (Math.floor(c/13)===1||Math.floor(c/13)===2);
+  return '<div class="pc'+(red?" r":"")+'"><div class="tl">'+r+'<br>'+su+'</div><div class="c">'+su+'</div><div class="br">'+r+'<br>'+su+'</div></div>';
+}
+MODS.bj = function(d){ const p=d.split("|"); if(p[0]==="lobby"){ BJ.money=+p[1]||BJ.money||0; BJ.bet=+p[2]||BJ.bet; BJ.state=null; } drawBJ(); };
+UPD.bj = function(d){
+  const [h, ds, ps] = d.split("#"), p = h.split("|");
+  BJ.state = {bet:+p[1], done:p[2]==="1", dv:+p[3], pv:+p[4], res:p[6]||"", d:(ds||"").split(";").filter(x=>x!==""), p:(ps||"").split(";").filter(x=>x!=="")};
+  BJ.money = +p[5]; drawBJ();
+};
+function drawBJ(){
+  const s = BJ.state;
+  const chips = '<div class="chips2">'+[[100,"#3d8bff"],[500,"#ff4d5e"],[1000,"#33d17a"],[5000,"#a66cff"],[10000,"#111"]].map(c=>'<div class="chip" style="background:'+c[1]+'" onclick="BJ.bet='+c[0]+';drawBJ()">'+(c[0]>=1000?c[0]/1000+"K":c[0])+'</div>').join("")+'</div>';
+  let body;
+  if(!s){
+    body = '<div class="felt" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px"><div style="font-size:54px">🂡</div><b style="font-size:22px">Plaseaza miza</b>'+chips+
+      '<div style="display:flex;gap:8px;align-items:center"><input id="bj-b" type="number" min="100" max="50000" value="'+BJ.bet+'" style="width:140px" oninput="BJ.bet=+this.value"><button class="pri" style="padding:12px 26px" onclick="act(\'bj\',\'deal\',BJ.bet)">Imparte cartile</button></div>'+
+      '<div class="muted" style="color:#cfe9d8">Blackjack platit 3:2 · dealerul sta la 17 · miza $100 - $50.000</div></div>';
+  } else {
+    body = '<div class="felt"><div class="lbl">DEALER <b>'+(s.dv<0?"?":s.dv)+'</b></div><div class="hand">'+s.d.map(card).join("")+'</div>'+
+      '<div class="lbl" style="margin-top:22px">TU <b>'+s.pv+'</b> · miza '+fmt(s.bet)+'</div><div class="hand">'+s.p.map(card).join("")+'</div>'+(s.done&&s.res?'<div class="bjres">'+esc(s.res)+'</div>':"")+'</div>';
+  }
+  const foot = !s ? '<span class="muted">Bani la tine: <b class="money">'+fmt(BJ.money)+'</b></span>'
+    : s.done ? '<span class="muted" style="margin-right:auto">Bani: <b class="money">'+fmt(BJ.money)+'</b></span>'+chips.replace('class="chips2"','class="chips2" style="transform:scale(.7)"')+'<button class="pri" onclick="act(\'bj\',\'deal\',BJ.bet)">Din nou ('+fmt(BJ.bet)+')</button><button onclick="act(\'bj\',\'close\')">Ma ridic</button>'
+    : '<span class="muted" style="margin-right:auto">Ai '+s.pv+'. Mai tragi?</span><button class="grn" style="padding:12px 28px" onclick="act(\'bj\',\'hit\')">🂠 Carte</button><button class="red" style="padding:12px 28px" onclick="act(\'bj\',\'stand\')">✋ Stai</button>';
+  root.innerHTML = shell("🃏","#0f4a29","Blackjack","Masa din cazinoul Four Dragons",body,foot);
 }
 
 /* ===================== EVENIMENTE DE LA SERVER ===================== */
@@ -1121,6 +1407,15 @@ if(HAS_CEF){
     spawn:"last~Unde ai iesit~Continui de unde ai ramas;house~Acasa~Casa - Idlewood;hq~Sediul factiunii~LSPD;center~Centrul orasului~Pershing Square;hospital~Spitalul All Saints~Langa medici",
     radio:"2|Infernus#0~Radio ZU;1~Kiss FM;2~Europa FM;3~Magic FM;4~Rock FM;5~Pro FM;6~Digi FM",
     interact:"4|Mihai_Rusu|5|Civil#pay~Da bani~1;showid~Arata buletinul~0;showlic~Arata permisele~0;give~Da un obiect~0;cuff~Pune catuse~0;frisk~Perchezitioneaza~0;ticket~Amenda~2;mdt~Deschide in MDT~0",
+    calendar:"6|1|30#"+[[0,500],[0,750],[1,5],[0,1000],[0,1250],[1,10],[2,0],[0,1500],[0,1750],[1,15],[0,2000],[0,2250],[1,20],[2,1],[0,2500],[0,2750],[1,25],[0,3000],[0,3250],[1,30],[2,1],[0,3500],[0,3750],[1,35],[0,4000],[0,4500],[1,40],[0,5000],[1,60],[2,2]].map(x=>x.join("~")).join(";"),
+    wheel:"1|245|10#0~500;1~5;0~1000;3~1;0~2500;2~0;0~750;1~15;0~10000;3~2;0~1500;2~1",
+    events:"19|42|10|6",
+    garage:"6|25400#3~411~Lamborghini Diablo~LS-0412~1~12400~64~1~3~52000;5~560~Subaru Impreza WRX~LS-7788~0~88000~20~0~0~12000;7~522~Yamaha R1~LS-0001~2~3000~90~1~0~5000",
+    top:"Cei mai bogati;Level;Ore jucate;Battle Pass;Arestari (LSPD)",
+    ref:"Ion_Popescu|0|12#Mihai_Rusu~5~1;Ana_Stan~3~0",
+    profile:"Mihai_Rusu|Cetatean model|5|42|Civil|[RO] Romanii|Ana_Stan|6|2|12|Bronze|29|24|4|Cluj",
+    news:"3~Update mare: interfata noua!~Login nou, HUD, vitezometru, roata norocului si calendar zilnic. Spor la joc!~~Admin_Ion~0;2~Weekend cu XP dublu~Sambata si duminica 20-22 Happy Hour.~~Admin_Ion~3",
+    bj:"lobby|8500|500",
     stats:"Ion_Popescu|Cetatean model|12|30|48|22|25400|180350|245|134|Pescar|3|LSPD - Sergent|[RO] Romanii|2|6|0|0|5|Bronze|7|6|29|0"
   };
   const bar = document.createElement("div");
@@ -1129,9 +1424,11 @@ if(HAS_CEF){
     if(k.startsWith("dialog")){
       DLGBUF = k==="dialog-list" ? "Masina 1 - {33AA33}Infernus\nMasina 2 - {FF6347}Banshee\nVinde masina\nGPS" : k==="dialog-input" ? "{FFFFFF}Scrie ID-ul skin-ului dorit (1 - 311).\nPret: {33AA33}$500" : "Masina\tStare\tKm\n{FFD700}Infernus\t{33AA33}Spawnata\t1.2 km\nBanshee\tParcata\t44.0 km";
       dlgShow("5|"+(k==="dialog-list"?2:k==="dialog-input"?1:5)+"|Masinile tale|Alege|Inchide"); return; }
-    if(k==="login"||k==="register"){ LAST_LOGIN=(k==="login"?"1":"2")+"|Ion_Popescu|RPG Server|"; MOD="login"; MODS.login(LAST_LOGIN); return; }
+    if(k==="login"||k==="register"){ LAST_LOGIN=(k==="login"?"1":"2")+"|Ion_Popescu|RPG Server||37|100"; MOD="login"; MODS.login(LAST_LOGIN); return; }
     MOD=null; openMod(k, demo[k]);
     if(k==="sb") UPD.sb("0~Ion_Popescu~12~LSPD~2641FE~35;4~Mihai_Rusu~5~Civil~FFFFFF~90;9~Ana_Stan~3~SMURD~FF4F7B~170");
+    if(k==="top") UPD.top("0#Ion_Popescu~9500000~29;Mihai_Rusu~4200000~101;Ana_Stan~1800000~12;Vasile_Tanc~900000~7;Dorel_Bob~400000~15");
+    if(k==="bj") setTimeout(()=>UPD.bj("state|1000|0|-1|17|7500|#25;-1#0;45"),300);
     if(k==="admin") UPD.admin("0~Ion_Popescu~12~2500~35;4~Mihai_Rusu~5~900~90");
   }; bar.appendChild(b); });
   document.body.appendChild(bar);
@@ -1140,6 +1437,6 @@ if(HAS_CEF){
   window.act = function(){ console.log("act", Array.from(arguments).join("|")); };
 }
 </script>
-<div style="position:fixed;left:6px;bottom:2px;font-size:10px;opacity:.35;color:#fff;pointer-events:none">ui v3</div>
+<div style="position:fixed;left:6px;bottom:2px;font-size:10px;opacity:.35;color:#fff;pointer-events:none">ui v4</div>
 </body>
 </html>
