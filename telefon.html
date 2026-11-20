@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<title>Smartphone RPG - CEF</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root{
+    --accent:#0a84ff; --bg1:#1c2a4a; --bg2:#0b1020; --glass:rgba(255,255,255,.12);
+    --text:#fff; --sub:rgba(255,255,255,.65); --frame:#0c0c0e; --radius:46px;
+  }
+  .theme-galaxy{ --accent:#3ddc84; --bg1:#112b25; --bg2:#050b0a; --frame:#16181a; --radius:38px; }
+  .theme-neon{ --accent:#ff2fa0; --bg1:#2a0b3d; --bg2:#06020c; --frame:#120617; --radius:42px; }
+  .theme-light{ --accent:#007aff; --bg1:#dfe9ff; --bg2:#9ab4e8; --glass:rgba(255,255,255,.55); --text:#111; --sub:rgba(0,0,0,.55); --frame:#d7d9de; }
+
+  *{box-sizing:border-box;margin:0;padding:0;user-select:none;-webkit-user-select:none}
+  html,body{width:100%;height:100%;background:transparent;overflow:hidden;
+    font-family:-apple-system,"SF Pro Display","Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:var(--text)}
+  body.preview{background:radial-gradient(circle at 30% 30%,#3a3f4b,#16181d)}
+
+  /* ---------- telefonul ---------- */
+  #phone{position:absolute;right:4vw;bottom:-720px;width:330px;height:680px;border-radius:var(--radius);
+    background:var(--frame);padding:12px;box-shadow:0 30px 80px rgba(0,0,0,.6),inset 0 0 0 2px rgba(255,255,255,.08),0 0 0 3px #2a2c31;
+    transition:bottom .45s cubic-bezier(.2,.9,.25,1.1)}
+  #phone.open{bottom:4vh}
+  .side-btn{position:absolute;width:4px;border-radius:2px;background:#2a2c31}
+  #screen{position:relative;width:100%;height:100%;border-radius:calc(var(--radius) - 12px);overflow:hidden;
+    background:linear-gradient(160deg,var(--bg1),var(--bg2))}
+  .wall-2 #screen{background:radial-gradient(circle at 20% 10%,#ff7a59,transparent 45%),radial-gradient(circle at 80% 90%,#6a5cff,transparent 50%),#140d2b}
+  .wall-3 #screen{background:linear-gradient(200deg,#0f2027,#203a43 45%,#2c5364)}
+  .wall-4 #screen{background:radial-gradient(circle at 50% 120%,#f9d423,#ff4e50 45%,#1b1b2f 80%)}
+
+  /* camera */
+  .notch{position:absolute;top:10px;left:50%;transform:translateX(-50%);width:110px;height:30px;border-radius:20px;background:#000;z-index:50;
+    display:flex;align-items:center;justify-content:flex-end;padding-right:12px}
+  .notch::after{content:"";width:10px;height:10px;border-radius:50%;background:radial-gradient(circle,#2b4b8c,#050505 70%)}
+  .theme-galaxy .notch{width:14px;height:14px;padding:0;justify-content:center}
+  .theme-galaxy .notch::after{width:8px;height:8px}
+
+  /* bara de stare */
+  .status{position:absolute;top:0;left:0;right:0;height:46px;display:flex;justify-content:space-between;align-items:center;
+    padding:6px 26px 0;font-size:14px;font-weight:600;z-index:40}
+  .status .right{display:flex;gap:6px;align-items:center}
+  .bars{display:flex;gap:2px;align-items:flex-end;height:11px}
+  .bars i{width:3px;background:var(--text);border-radius:1px}
+  .batt{width:24px;height:11px;border:1.5px solid var(--text);border-radius:3px;padding:1px;position:relative}
+  .batt::after{content:"";position:absolute;right:-4px;top:3px;width:2px;height:4px;background:var(--text);border-radius:1px}
+  .batt b{display:block;height:100%;width:80%;background:#30d158;border-radius:1px}
+
+  .page{position:absolute;inset:0;padding:54px 18px 70px;transition:transform .35s ease,opacity .3s ease}
+  .page.hidden{opacity:0;pointer-events:none;transform:scale(1.06)}
+
+  /* ecran blocat */
+  #lock{display:flex;flex-direction:column;align-items:center;cursor:pointer}
+  #lock .clock{font-size:76px;font-weight:300;margin-top:40px;letter-spacing:-2px}
+  #lock .date{font-size:16px;color:var(--sub);text-transform:capitalize}
+  #lock .notif{margin-top:auto;width:100%;background:var(--glass);backdrop-filter:blur(14px);border-radius:18px;padding:12px 14px;font-size:13px}
+  #lock .hint{margin-top:16px;font-size:12px;color:var(--sub);animation:bob 1.6s infinite}
+  @keyframes bob{50%{transform:translateY(-4px)}}
+
+  /* ecran principal */
+  .widget{background:var(--glass);backdrop-filter:blur(14px);border-radius:22px;padding:14px 16px;margin-bottom:18px;display:flex;justify-content:space-between;align-items:center}
+  .widget .t{font-size:12px;color:var(--sub)}
+  .widget .v{font-size:22px;font-weight:700}
+  .widget .num{font-size:12px;color:var(--sub);text-align:right}
+  .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px 10px}
+  .app{display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;position:relative}
+  .app .ic{width:56px;height:56px;border-radius:15px;display:flex;align-items:center;justify-content:center;
+    box-shadow:0 6px 14px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.35);transition:transform .15s}
+  .theme-galaxy .app .ic{border-radius:50%}
+  .app:hover .ic{transform:scale(1.08)}
+  .app:active .ic{transform:scale(.92)}
+  .app svg{width:30px;height:30px;fill:#fff}
+  .app span{font-size:11px;text-shadow:0 1px 2px rgba(0,0,0,.5)}
+  .theme-light .app span{text-shadow:none}
+  .badge{position:absolute;top:-5px;right:2px;min-width:20px;height:20px;border-radius:10px;background:#ff3b30;font-size:11px;font-weight:700;
+    display:flex;align-items:center;justify-content:center;padding:0 5px;color:#fff;border:2px solid var(--bg2)}
+  .dock{position:absolute;left:12px;right:12px;bottom:26px;height:80px;border-radius:28px;background:var(--glass);backdrop-filter:blur(18px);
+    display:flex;justify-content:space-around;align-items:center}
+  .dock .app span{display:none}
+  .home-bar{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);width:120px;height:5px;border-radius:3px;background:var(--text);opacity:.85;cursor:pointer;z-index:60}
+
+  /* aplicatii interne */
+  .app-page{background:var(--bg2)}
+  .app-head{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+  .back{width:32px;height:32px;border-radius:50%;background:var(--glass);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px}
+  .app-head h2{font-size:24px}
+  .display{font-size:34px;text-align:center;min-height:48px;letter-spacing:2px;margin:10px 0 18px}
+  .pad{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;justify-items:center}
+  .key{width:68px;height:68px;border-radius:50%;background:var(--glass);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;font-size:26px}
+  .key small{font-size:9px;color:var(--sub);letter-spacing:2px}
+  .key:active{background:rgba(255,255,255,.3)}
+  .call-btn{width:68px;height:68px;border-radius:50%;background:#30d158;display:flex;align-items:center;justify-content:center;cursor:pointer;margin:18px auto 0}
+  .call-btn svg{width:30px;fill:#fff}
+  .list .row{display:flex;align-items:center;gap:12px;padding:12px;border-radius:16px;background:var(--glass);margin-bottom:10px;cursor:pointer}
+  .list .row .ic{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center}
+  .list .row .ic svg{width:24px;fill:#fff}
+  .list .row b{display:block;font-size:14px}
+  .list .row small{font-size:12px;color:var(--sub)}
+  .opt{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 14px}
+  .chip{padding:8px 12px;border-radius:14px;background:var(--glass);cursor:pointer;font-size:12px}
+  .chip.on{background:var(--accent);color:#fff}
+  .sec{font-size:12px;color:var(--sub);margin:8px 0 4px;text-transform:uppercase;letter-spacing:1px}
+
+  /* toast */
+  #toast{position:absolute;top:52px;left:12px;right:12px;background:var(--glass);backdrop-filter:blur(18px);border-radius:18px;padding:10px 14px;
+    font-size:13px;z-index:70;transform:translateY(-140%);transition:transform .35s}
+  #toast.show{transform:none}
+  #toast b{display:block;font-size:12px;color:var(--sub)}
+</style>
+</head>
+<body>
+
+<div id="phone" class="theme-ios wall-1">
+  <div class="side-btn" style="left:-4px;top:110px;height:30px"></div>
+  <div class="side-btn" style="left:-4px;top:160px;height:56px"></div>
+  <div class="side-btn" style="right:-4px;top:150px;height:80px"></div>
+  <div id="screen">
+    <div class="notch"></div>
+    <div class="status">
+      <span id="st-time">12:00</span>
+      <span class="right">
+        <span class="bars"><i style="height:4px"></i><i style="height:6px"></i><i style="height:8px"></i><i style="height:11px"></i></span>
+        <span style="font-size:12px">5G</span>
+        <span class="batt"><b></b></span>
+      </span>
+    </div>
+    <div id="toast"><b id="toast-app">SMS</b><span id="toast-text"></span></div>
+
+    <!-- ecran blocat -->
+    <div id="lock" class="page" onclick="unlock()">
+      <div class="clock" id="lk-time">12:00</div>
+      <div class="date" id="lk-date">vineri, 20 noiembrie</div>
+      <div class="notif" id="lk-notif">Bine ai venit pe server! Ai <b id="lk-unread">0</b> mesaje necitite.</div>
+      <div class="hint">Click ca sa deblochezi</div>
+    </div>
+
+    <!-- ecran principal -->
+    <div id="home" class="page hidden">
+      <div class="widget">
+        <div><div class="t">Banca Los Santos</div><div class="v" id="w-bank">$0</div></div>
+        <div class="num"><span id="w-name">Jucator</span><br><span id="w-number">07...</span><br>Cash: <b id="w-money">$0</b></div>
+      </div>
+      <div class="grid" id="grid"></div>
+      <div class="dock" id="dock"></div>
+    </div>
+
+    <!-- telefon (tastatura) -->
+    <div id="dialer" class="page app-page hidden">
+      <div class="app-head"><div class="back" onclick="go('home')">&#8249;</div><h2>Telefon</h2></div>
+      <div class="display" id="dial">&nbsp;</div>
+      <div class="pad" id="pad"></div>
+      <div class="call-btn" onclick="callNumber()"><svg viewBox="0 0 24 24"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1A17 17 0 0 1 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1z"/></svg></div>
+    </div>
+
+    <!-- urgente -->
+    <div id="sos" class="page app-page hidden">
+      <div class="app-head"><div class="back" onclick="go('home')">&#8249;</div><h2>Urgente</h2></div>
+      <div class="list" id="sos-list"></div>
+    </div>
+
+    <!-- setari -->
+    <div id="settings" class="page app-page hidden">
+      <div class="app-head"><div class="back" onclick="go('home')">&#8249;</div><h2>Setari</h2></div>
+      <div class="sec">Model telefon</div>
+      <div class="opt" id="opt-theme"></div>
+      <div class="sec">Imagine de fundal</div>
+      <div class="opt" id="opt-wall"></div>
+      <div class="sec">Altele</div>
+      <div class="list">
+        <div class="row" onclick="send('app','settings')"><div class="ic" style="background:#8e8e93">⚙</div><div><b>Sunet, notificari, numar</b><small>setarile salvate pe server</small></div></div>
+      </div>
+    </div>
+
+    <div class="home-bar" onclick="homeBtn()"></div>
+  </div>
+</div>
+
+<script>
+/* ===================== legatura cu serverul (samp-cef) ===================== */
+const HAS_CEF = typeof cef !== "undefined";
+if(!HAS_CEF) document.body.classList.add("preview");
+
+function send(type, value){
+  // type: app / call / close / theme
+  if(HAS_CEF) cef.emit("phone:" + type, String(value === undefined ? "" : value));
+  else console.log("[cef.emit]", "phone:" + type, value);
+  if(type === "app" && APPS_SERVER.includes(value)) closePhone(false);
+}
+
+/* ===================== date ===================== */
+let D = {name:"Ion_Popescu", number:"071000001", money:1500, bank:25000, unread:2, theme:0, wall:0};
+
+const ICONS = {
+  bank:'<path d="M12 2 2 7v2h20V7L12 2zM4 11v7h3v-7H4zm6.5 0v7h3v-7h-3zM17 11v7h3v-7h-3zM2 20v2h20v-2H2z"/>',
+  market:'<path d="M7 18a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm10 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM5.2 4H2V2h4.6l.9 2H21l-3.6 8.1c-.3.6-1 1-1.7 1H8.1L7 15h12v2H5.6c-1.3 0-2-1.4-1.4-2.5L5.6 12 2.6 4z"/>',
+  taxi:'<path d="M18.9 6c-.2-.6-.8-1-1.4-1h-2V3h-7v2h-2c-.7 0-1.2.4-1.4 1L3 12v8c0 .6.4 1 1 1h1c.6 0 1-.4 1-1v-1h12v1c0 .6.4 1 1 1h1c.6 0 1-.4 1-1v-8l-2.1-6zM6.5 16a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm11 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zM5 11l1.5-4.5h11L19 11H5z"/>',
+  cars:'<path d="M5 11l1.5-4.5h11L19 11m-1.5 5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m-11 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3M18.9 6c-.2-.6-.8-1-1.4-1h-11c-.7 0-1.2.4-1.4 1L3 12v8c0 .6.4 1 1 1h1c.6 0 1-.4 1-1v-1h12v1c0 .6.4 1 1 1h1c.6 0 1-.4 1-1v-8l-2.1-6z"/>',
+  contacts:'<path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm0 2c-2.7 0-8 1.3-8 4v2h16v-2c0-2.7-5.3-4-8-4z"/>',
+  messages:'<path d="M20 2H4a2 2 0 0 0-2 2v18l4-4h14a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2z"/>',
+  events:'<path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2h-1V1h-2zm3 18H5V8h14v11z"/>',
+  news:'<path d="M20 3H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2zM6 7h6v6H6V7zm0 8h12v2H6v-2zm8-8h4v2h-4V7zm0 4h4v2h-4v-2z"/>',
+  settings:'<path d="M19.1 12.9a7 7 0 0 0 0-1.8l2-1.6-2-3.4-2.4 1a7 7 0 0 0-1.5-.9L14.8 3h-4l-.4 3.2a7 7 0 0 0-1.5.9l-2.4-1-2 3.4 2 1.6a7 7 0 0 0 0 1.8l-2 1.6 2 3.4 2.4-1c.5.4 1 .7 1.5.9l.4 3.2h4l.4-3.2c.5-.2 1-.5 1.5-.9l2.4 1 2-3.4-2-1.6zM12.8 15.5a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7z"/>',
+  phone:'<path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1A17 17 0 0 1 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1z"/>',
+  sos:'<path d="M12 2 1 21h22L12 2zm1 16h-2v-2h2v2zm0-4h-2v-4h2v4z"/>',
+  gps:'<path d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z"/>',
+  bp:'<path d="M12 2 4 5v6c0 5.5 3.4 10.7 8 12 4.6-1.3 8-6.5 8-12V5l-8-3zm-1.5 15-4-4 1.4-1.4 2.6 2.6 6.6-6.6L18.5 9l-8 8z"/>',
+  bag:'<path d="M18 6h-2a4 4 0 0 0-8 0H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2zm-6-2a2 2 0 0 1 2 2h-4a2 2 0 0 1 2-2z"/>',
+  jobs:'<path d="M20 6h-4V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2H4a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2zm-6 0h-4V4h4v2z"/>',
+  skins:'<path d="M16 4l-1.5-2h-5L8 4 3 6l1.5 5L7 10v12h10V10l2.5 1L21 6l-5-2z"/>'
+};
+// aplicatii care deschid meniurile serverului (dialog-urile existente)
+const APPS_SERVER = ["bank","market","taxi","cars","contacts","messages","events","news","settings","gps","bp","bag","jobs","skins","medic","mecanic","police"];
+const APPS = [
+  {id:"bank",name:"Bank",c:"linear-gradient(135deg,#34c759,#1f8f3a)"},
+  {id:"market",name:"Market",c:"linear-gradient(135deg,#ff9f0a,#d97706)"},
+  {id:"taxi",name:"Taxi",c:"linear-gradient(135deg,#ffd60a,#e0a800)"},
+  {id:"cars",name:"Cars",c:"linear-gradient(135deg,#0a84ff,#0055c8)"},
+  {id:"messages",name:"Mesaje",c:"linear-gradient(135deg,#30d158,#16a34a)",badge:true},
+  {id:"events",name:"Evenimente",c:"linear-gradient(135deg,#ff375f,#c81e4a)"},
+  {id:"news",name:"News",c:"linear-gradient(135deg,#ff6b35,#c2410c)"},
+  {id:"gps",name:"GPS",c:"linear-gradient(135deg,#5ac8fa,#0284c7)"},
+  {id:"sos",name:"Urgente",c:"linear-gradient(135deg,#ff453a,#991b1b)",local:true},
+  {id:"bp",name:"Battle Pass",c:"linear-gradient(135deg,#bf5af2,#7e22ce)"},
+  {id:"bag",name:"Rucsac",c:"linear-gradient(135deg,#a2845e,#6b4f2c)"},
+  {id:"jobs",name:"Joburi",c:"linear-gradient(135deg,#64d2ff,#0e7490)"},
+  {id:"skins",name:"Garderoba",c:"linear-gradient(135deg,#ff2fa0,#9d174d)"},
+  {id:"contacts",name:"Contacte",c:"linear-gradient(135deg,#8e8e93,#48484a)"}
+];
+const DOCK = [
+  {id:"dialer",name:"Telefon",icon:"phone",c:"linear-gradient(135deg,#30d158,#16a34a)",local:true},
+  {id:"messages",name:"Mesaje",c:"linear-gradient(135deg,#0a84ff,#0055c8)"},
+  {id:"contacts",name:"Contacte",c:"linear-gradient(135deg,#8e8e93,#48484a)"},
+  {id:"settings_local",name:"Setari",icon:"settings",c:"linear-gradient(135deg,#636366,#3a3a3c)",local:true}
+];
+const SOS = [
+  {id:"medic",name:"SMURD - ambulanta",sub:"un medic vine la tine",c:"#ff453a",icon:"sos"},
+  {id:"mecanic",name:"Service auto",sub:"mecanic pentru masina",c:"#ff9f0a",icon:"cars"},
+  {id:"taxi",name:"Taxi",sub:"cheama un taxi",c:"#e0a800",icon:"taxi"}
+];
+const THEMES = ["iPhone","Galaxy","Neon","Light"];
+const THEME_CLS = ["theme-ios","theme-galaxy","theme-neon","theme-light"];
+
+/* ===================== construire UI ===================== */
+function icon(name){ return '<svg viewBox="0 0 24 24">'+ICONS[name]+'</svg>'; }
+function appHTML(a){
+  const b = a.badge && D.unread>0 ? '<div class="badge">'+D.unread+'</div>' : '';
+  return '<div class="app" onclick="openApp(\''+a.id+'\','+(a.local?1:0)+')">'+b+
+         '<div class="ic" style="background:'+a.c+'">'+icon(a.icon||a.id)+'</div><span>'+a.name+'</span></div>';
+}
+function build(){
+  document.getElementById("grid").innerHTML = APPS.map(appHTML).join("");
+  document.getElementById("dock").innerHTML = DOCK.map(appHTML).join("");
+  document.getElementById("sos-list").innerHTML = SOS.map(s =>
+    '<div class="row" onclick="send(\'app\',\''+s.id+'\')"><div class="ic" style="background:'+s.c+'">'+icon(s.icon)+'</div><div><b>'+s.name+'</b><small>'+s.sub+'</small></div></div>').join("");
+  const keys=[["1",""],["2","ABC"],["3","DEF"],["4","GHI"],["5","JKL"],["6","MNO"],["7","PQRS"],["8","TUV"],["9","WXYZ"],["*",""],["0","+"],["#",""]];
+  document.getElementById("pad").innerHTML = keys.map(k=>'<div class="key" onclick="dial(\''+k[0]+'\')">'+k[0]+'<small>'+k[1]+'</small></div>').join("");
+  document.getElementById("opt-theme").innerHTML = THEMES.map((t,i)=>'<div class="chip'+(D.theme==i?' on':'')+'" onclick="setTheme('+i+')">'+t+'</div>').join("");
+  document.getElementById("opt-wall").innerHTML = [1,2,3,4].map(w=>'<div class="chip'+(D.wall==w-1?' on':'')+'" onclick="setWall('+(w-1)+')">Fundal '+w+'</div>').join("");
+  fill();
+}
+function fmt(n){ return "$" + Number(n||0).toLocaleString("ro-RO"); }
+function fill(){
+  document.getElementById("w-bank").textContent = fmt(D.bank);
+  document.getElementById("w-money").textContent = fmt(D.money);
+  document.getElementById("w-name").textContent = String(D.name).replace(/_/g," ");
+  document.getElementById("w-number").textContent = D.number;
+  document.getElementById("lk-unread").textContent = D.unread;
+}
+function applyLook(){
+  const p = document.getElementById("phone");
+  p.className = (p.classList.contains("open")?"open ":"") + THEME_CLS[D.theme] + " wall-" + (D.wall+1);
+}
+function setTheme(i){ D.theme=i; applyLook(); build(); send("theme", D.theme + " " + D.wall); }
+function setWall(i){ D.wall=i; applyLook(); build(); send("theme", D.theme + " " + D.wall); }
+
+/* ===================== navigare ===================== */
+let current = "lock";
+function go(id){
+  document.querySelectorAll(".page").forEach(p=>p.classList.add("hidden"));
+  document.getElementById(id).classList.remove("hidden");
+  current = id;
+}
+function unlock(){ go("home"); }
+function homeBtn(){ if(current==="home") closePhone(true); else go("home"); }
+function openApp(id, local){
+  if(local){
+    if(id==="dialer"){ dialStr=""; showDial(); go("dialer"); }
+    else if(id==="sos") go("sos");
+    else if(id==="settings_local") go("settings");
+    return;
+  }
+  send("app", id);
+}
+
+let dialStr = "";
+function showDial(){ document.getElementById("dial").innerHTML = dialStr || "&nbsp;"; }
+function dial(k){ if(dialStr.length<12){ dialStr+=k; showDial(); } }
+function callNumber(){ if(!dialStr) return; send("call", dialStr); closePhone(false); }
+
+/* ===================== deschide / inchide ===================== */
+function openPhone(){
+  document.getElementById("phone").classList.add("open");
+  go("lock");
+}
+function closePhone(notify){
+  document.getElementById("phone").classList.remove("open");
+  if(notify) send("close");
+}
+document.addEventListener("keydown", e=>{
+  if(e.key==="Escape") closePhone(true);
+  if(current==="dialer"){
+    if(/^[0-9*#]$/.test(e.key)) dial(e.key);
+    if(e.key==="Backspace"){ dialStr=dialStr.slice(0,-1); showDial(); }
+    if(e.key==="Enter") callNumber();
+  }
+});
+
+function toast(app, text){
+  document.getElementById("toast-app").textContent = app;
+  document.getElementById("toast-text").textContent = text;
+  const t = document.getElementById("toast"); t.classList.add("show");
+  clearTimeout(window._tt); window._tt = setTimeout(()=>t.classList.remove("show"), 3500);
+}
+
+/* ceas */
+function tick(){
+  const d = new Date(), hh = String(d.getHours()).padStart(2,"0"), mm = String(d.getMinutes()).padStart(2,"0");
+  document.getElementById("st-time").textContent = hh+":"+mm;
+  document.getElementById("lk-time").textContent = hh+":"+mm;
+  document.getElementById("lk-date").textContent = d.toLocaleDateString("ro-RO",{weekday:"long",day:"numeric",month:"long"});
+}
+setInterval(tick, 1000); tick();
+
+/* ===================== evenimente de la server ===================== */
+if(HAS_CEF){
+  // date: nume|numar|cash|banca|necitite|tema|fundal
+  cef.on("phone:open", (data)=>{
+    const p = String(data).split("|");
+    D.name=p[0]; D.number=p[1]; D.money=+p[2]; D.bank=+p[3]; D.unread=+p[4]; D.theme=+(p[5]||0)%4; D.wall=+(p[6]||0)%4;
+    applyLook(); build(); openPhone();
+  });
+  cef.on("phone:hide", ()=>closePhone(false));
+  cef.on("phone:notify", (app, text)=>toast(app, text));
+} else {
+  // previzualizare in browser
+  build(); applyLook(); openPhone();
+  setTimeout(()=>toast("Mesaje","Ana: Ne vedem la cazino la 9?"), 1500);
+}
+</script>
+</body>
+</html>
