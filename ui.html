@@ -228,6 +228,26 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
 .ok{background:rgba(51,209,122,.18);color:var(--green)} .no{background:rgba(255,77,94,.18);color:var(--red)}
 .crime{padding:9px 0;border-bottom:1px solid var(--line);font-size:13px}
 .form{display:grid;grid-template-columns:90px 1fr;gap:8px;align-items:center}
+
+/* dialoguri universale */
+#dlg{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.3);z-index:500;animation:fade .15s}
+#dlg .win{width:auto;min-width:420px;max-width:min(860px,94vw)}
+#dlg .wb{white-space:normal;line-height:1.55;font-size:14px;max-height:62vh}
+#dlg .msg{white-space:pre-wrap}
+#dlg .lst div.r{display:flex;gap:14px;padding:10px 12px;border-radius:12px;cursor:pointer}
+#dlg .lst div.r:hover{background:var(--bg2)}
+#dlg .lst div.r.on{background:rgba(255,176,32,.16);outline:1px solid var(--accent)}
+#dlg .lst div.r span{flex:1;min-width:0}
+#dlg .lst div.h{display:flex;gap:14px;padding:6px 12px;font-size:12px;color:var(--sub);font-weight:700;border-bottom:1px solid var(--line);margin-bottom:6px}
+#dlg .lst div.h span{flex:1}
+#dlg .wf{justify-content:flex-end}
+/* fisa /stats */
+.stcard{display:flex;gap:20px}
+.stcard .pic{width:190px;height:260px;border-radius:20px;background:linear-gradient(160deg,rgba(255,176,32,.25),rgba(61,139,255,.15));display:flex;align-items:flex-end;justify-content:center;overflow:hidden;position:relative;flex-shrink:0}
+.stcard .pic img{width:100%;height:100%;object-fit:contain;position:absolute;inset:0}
+.stcard .pic b{position:relative;margin-bottom:10px;background:rgba(0,0,0,.5);padding:3px 10px;border-radius:8px;font-size:12px}
+.pbar{height:9px;border-radius:6px;background:rgba(255,255,255,.08);overflow:hidden;margin-top:6px}
+.pbar div{height:100%;background:linear-gradient(90deg,var(--accent),var(--pink))}
 </style>
 </head>
 <body>
@@ -266,6 +286,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
 
 <div id="notes"></div>
 <div id="root"></div>
+<div id="dlgroot"></div>
 <div id="drag" class="hidden"></div>
 
 <script>
@@ -274,6 +295,7 @@ const HAS_CEF = typeof cef !== "undefined";
 if(HAS_CEF) document.body.classList.add("cef"); else document.body.classList.add("preview");
 const $ = s=>document.querySelector(s);
 const root = $("#root");
+let DLG = null, DLGBUF = "";
 const fmt = n=>"$"+Number(n||0).toLocaleString("ro-RO");
 const esc = s=>String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 function emit(ev, s){ if(HAS_CEF){ try{ cef.emit(ev, String(s)); }catch(e){} } else console.log("[emit]", ev, s); }
@@ -285,6 +307,7 @@ const cur = $("#cursor");
 const mv = e=>{ cur.style.left=e.clientX+"px"; cur.style.top=e.clientY+"px"; };
 ["mousemove","pointermove","mouseover","mousedown"].forEach(t=>window.addEventListener(t, mv, true));
 function setFocus(on){
+  if(!on && DLG) on = true;
   document.body.classList.toggle("focus", on);
   if(HAS_CEF){ try{ cef.set_focus(on); }catch(e){} }
 }
@@ -377,6 +400,7 @@ function closeMod(notifyServer){
 }
 function updMod(mod, data){ if(MOD===mod && UPD[mod]) UPD[mod](data); }
 window.addEventListener("keydown", e=>{
+  if(DLG) return;
   if(e.key==="Escape" || e.keyCode===27){
     if(MOD==="death"){ deathMini(); return; }
     closeMod(true);
@@ -779,10 +803,87 @@ UPD.casino = function(d){
   }
 };
 
+
+/* ===================== DIALOGURI UNIVERSALE (orice ShowPlayerDialog) ===================== */
+function sampColors(t){
+  // {RRGGBB} -> culoare; \n -> rand nou
+  let out = "", open = false;
+  const re = /\{([0-9a-fA-F]{6})\}/g; let last = 0, m;
+  while((m = re.exec(t))){ out += esc(t.slice(last, m.index)); if(open) out += "</span>"; out += '<span style="color:#'+m[1]+'">'; open = true; last = re.lastIndex; }
+  out += esc(t.slice(last)); if(open) out += "</span>";
+  return out;
+}
+function plain(t){ return String(t).replace(/\{[0-9a-fA-F]{6}\}/g,""); }
+function dlgShow(head){
+  const p = head.split("|"), info = DLGBUF; DLGBUF = "";
+  DLG = {id:+p[0], style:+p[1], cap:p[2]||"", b1:p[3]||"OK", b2:p[4]||"", sel:0, rows:[], info:info};
+  setFocus(true);
+  const st = DLG.style;
+  let body = "";
+  if(st===0) body = '<div class="msg">'+sampColors(info)+'</div>';
+  else if(st===1 || st===3) body = '<div class="msg" style="margin-bottom:12px">'+sampColors(info)+'</div><input id="dl-in" type="'+(st===3?"password":"text")+'" maxlength="128" autocomplete="off">';
+  else {
+    let lines = info.split("\n"); if(lines.length && lines[lines.length-1]==="") lines.pop();
+    let header = null;
+    if(st===5){ header = lines.shift(); }
+    DLG.rows = lines;
+    const cols = l=>l.split("\t").map(c=>'<span>'+sampColors(c)+'</span>').join("");
+    body = (lines.length>12?'<input id="dl-q" placeholder="Cauta..." style="margin-bottom:10px">':"")+'<div class="lst">'+(header?'<div class="h">'+cols(header)+'</div>':"")+
+      lines.map((l,i)=>'<div class="r'+(i===0?" on":"")+'" data-i="'+i+'" onclick="dlgSel('+i+')" ondblclick="dlgSel('+i+');dlgResp(1)">'+cols(l)+'</div>').join("")+'</div>';
+  }
+  const foot = (DLG.b2?'<button onclick="dlgResp(0)">'+esc(DLG.b2)+'</button>':"")+'<button class="pri" onclick="dlgResp(1)">'+esc(DLG.b1)+'</button>';
+  $("#dlgroot").innerHTML = '<div id="dlg"><div class="win"><div class="wh"><div class="ic">💬</div><div><h2>'+sampColors(DLG.cap)+'</h2></div><button class="x" onclick="dlgResp(0)">✕</button></div><div class="wb">'+body+'</div><div class="wf">'+foot+'</div></div></div>';
+  const inp = $("#dl-in"); if(inp) setTimeout(()=>inp.focus(), 30);
+  const q = $("#dl-q");
+  if(q){ setTimeout(()=>q.focus(),30); q.addEventListener("input", ()=>{ const v=q.value.toLowerCase(); let first=-1;
+    document.querySelectorAll("#dlg .r").forEach(r=>{ const ok = plain(DLG.rows[+r.dataset.i]).toLowerCase().includes(v); r.style.display = ok?"":"none"; if(ok && first<0) first=+r.dataset.i; });
+    if(first>=0) dlgSel(first); }); }
+}
+function dlgSel(i){ if(!DLG) return; DLG.sel = i; document.querySelectorAll("#dlg .r").forEach(r=>r.classList.toggle("on", +r.dataset.i===i)); }
+function dlgResp(r){
+  if(!DLG) return;
+  let li = -1, txt = "";
+  if(DLG.style===1 || DLG.style===3) txt = ($("#dl-in")||{}).value || "";
+  else if(DLG.style!==0){ li = DLG.sel; txt = plain((DLG.rows[li]||"").split("\t")[0]); }
+  txt = txt.replace(/\|/g,"").slice(0,250);
+  emit("ui:dlgr", DLG.id+"|"+r+"|"+li+"|"+txt);
+  DLG = null; $("#dlgroot").innerHTML = "";
+  if(!MOD) setFocus(false);
+}
+window.addEventListener("keydown", e=>{
+  if(!DLG) return;
+  if(e.key==="Enter"){ e.preventDefault(); dlgResp(1); e.stopImmediatePropagation(); }
+  else if(e.key==="Escape"){ dlgResp(0); e.stopImmediatePropagation(); }
+  else if(DLG.rows.length && (e.key==="ArrowDown"||e.key==="ArrowUp")){
+    e.preventDefault();
+    const vis = Array.from(document.querySelectorAll("#dlg .r")).filter(r=>r.style.display!=="none").map(r=>+r.dataset.i);
+    let k = vis.indexOf(DLG.sel); k = Math.max(0, Math.min(vis.length-1, k + (e.key==="ArrowDown"?1:-1)));
+    dlgSel(vis[k]); const el = document.querySelector('#dlg .r[data-i="'+vis[k]+'"]'); if(el) el.scrollIntoView({block:"nearest"});
+  }
+}, true);
+
+/* ===================== /stats ===================== */
+MODS.stats = function(d){
+  const p = d.split("|");
+  const lvl=+p[2], resp=+p[3], need=+p[4], pd=+p[5];
+  const st = (k,v,c)=>'<div class="stat"><small>'+k+'</small><b'+(c?' class="'+c+'"':"")+'>'+v+'</b></div>';
+  const body = '<div class="stcard"><div class="pic">'+skinImg(p[22])+'<b>Skin #'+p[22]+'</b></div><div style="flex:1">'+
+    '<h2 style="font-size:24px">'+esc(p[0])+' <span class="muted" style="font-size:14px">ID '+p[23]+'</span></h2><div class="gold" style="font-weight:700;margin-bottom:12px">'+esc(p[1])+'</div>'+
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:12px"><div><div style="display:flex;justify-content:space-between"><b>Level '+lvl+'</b><span class="muted">'+resp+' / '+need+' respect</span></div><div class="pbar"><div style="width:'+Math.min(100,resp*100/Math.max(1,need))+'%"></div></div></div>'+
+    '<div><div style="display:flex;justify-content:space-between"><b>PayDay</b><span class="muted">in '+pd+' min</span></div><div class="pbar"><div style="width:'+Math.min(100,(60-pd)*100/60)+'%"></div></div></div></div>'+
+    '<div class="grid" style="grid-template-columns:repeat(4,1fr)">'+st("Bani",fmt(p[6]),"money")+st("Banca",fmt(p[7]),"money")+st("Emeralde","💎 "+p[8])+st("Ore jucate",p[9])+
+    st("Job",esc(p[10])+' <span class="gold">'+"★".repeat(+p[11])+'</span>')+st("Factiune",esc(p[12]))+st("Clan",esc(p[13]))+st("Masini",p[14]+" / "+p[15])+
+    st("Warn",p[16]+" / 3",+p[16]>0?"red":"")+st("Wanted",+p[17]>0?'<span style="color:#ffd23d">'+"★".repeat(+p[17])+'</span>':"-")+st("Cadouri",p[18]+" / 7 zile")+st("VIP",esc(p[19]))+
+    st("Battle Pass","Tier "+p[20])+st("Insigne",p[21]+" / 16")+'</div></div></div>';
+  root.innerHTML = shell("🪪","linear-gradient(135deg,#ff4d5e,#ffb020)","Fisa cetateanului","Los Santos · RPG.RO",body,"");
+};
+
 /* ===================== EVENIMENTE DE LA SERVER ===================== */
 if(HAS_CEF){
   cef.on("ui:hud", d=>hud(String(d)));
   cef.on("ui:speedo", d=>speedo(String(d)));
+  cef.on("ui:dlgp", d=>{ DLGBUF += String(d==null?"":d); });
+  cef.on("ui:dlg", d=>{ d=String(d); if(d==="hide"){ DLG=null; DLGBUF=""; $("#dlgroot").innerHTML=""; if(!MOD) setFocus(false); return; } dlgShow(d); });
   cef.on("ui:notify", (t,a,b)=>notify(String(t),String(a),String(b)));
   cef.on("ui:login", d=>{ LAST_LOGIN=String(d); if(String(d).charAt(0)==="0"){ MODS.login(LAST_LOGIN); return; } MOD="login"; setFocus(true); MODS.login(LAST_LOGIN); });
   cef.on("ui:open", (m,d)=>{ if(MOD==="login") return; openMod(String(m), String(d==null?"":d)); });
@@ -812,11 +913,15 @@ if(HAS_CEF){
     sb:"3|100|RPG Server",
     admin:"6#2~Mihai_Rusu~Ma bug-uieste masina~-",
     casino:"8500|0",
-    death:"1|Vasile_Tanc|Desert Eagle|74|2"
+    death:"1|Vasile_Tanc|Desert Eagle|74|2",
+    stats:"Ion_Popescu|Cetatean model|12|30|48|22|25400|180350|245|134|Pescar|3|LSPD - Sergent|[RO] Romanii|2|6|0|0|5|Bronze|7|6|29|0"
   };
   const bar = document.createElement("div");
   bar.style.cssText = "position:fixed;left:10px;bottom:10px;display:flex;gap:6px;flex-wrap:wrap;z-index:5000";
-  Object.keys(demo).concat(["login","register"]).forEach(k=>{ const b=document.createElement("button"); b.textContent=k; b.onclick=()=>{
+  Object.keys(demo).concat(["login","register","dialog-list","dialog-input","dialog-tab"]).forEach(k=>{ const b=document.createElement("button"); b.textContent=k; b.onclick=()=>{
+    if(k.startsWith("dialog")){
+      DLGBUF = k==="dialog-list" ? "Masina 1 - {33AA33}Infernus\nMasina 2 - {FF6347}Banshee\nVinde masina\nGPS" : k==="dialog-input" ? "{FFFFFF}Scrie ID-ul skin-ului dorit (1 - 311).\nPret: {33AA33}$500" : "Masina\tStare\tKm\n{FFD700}Infernus\t{33AA33}Spawnata\t1.2 km\nBanshee\tParcata\t44.0 km";
+      dlgShow("5|"+(k==="dialog-list"?2:k==="dialog-input"?1:5)+"|Masinile tale|Alege|Inchide"); return; }
     if(k==="login"||k==="register"){ LAST_LOGIN=(k==="login"?"1":"2")+"|Ion_Popescu|RPG Server|"; MOD="login"; MODS.login(LAST_LOGIN); return; }
     MOD=null; openMod(k, demo[k]);
     if(k==="sb") UPD.sb("0~Ion_Popescu~12~LSPD~2641FE~35;4~Mihai_Rusu~5~Civil~FFFFFF~90;9~Ana_Stan~3~SMURD~FF4F7B~170");
@@ -826,6 +931,6 @@ if(HAS_CEF){
   window.act = function(){ console.log("act", Array.from(arguments).join("|")); };
 }
 </script>
-<div style="position:fixed;left:6px;bottom:2px;font-size:10px;opacity:.35;color:#fff;pointer-events:none">ui v1</div>
+<div style="position:fixed;left:6px;bottom:2px;font-size:10px;opacity:.35;color:#fff;pointer-events:none">ui v2</div>
 </body>
 </html>
