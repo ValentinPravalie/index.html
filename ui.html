@@ -248,6 +248,75 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
 .stcard .pic b{position:relative;margin-bottom:10px;background:rgba(0,0,0,.5);padding:3px 10px;border-radius:8px;font-size:12px}
 .pbar{height:9px;border-radius:6px;background:rgba(255,255,255,.08);overflow:hidden;margin-top:6px}
 .pbar div{height:100%;background:linear-gradient(90deg,var(--accent),var(--pink))}
+
+/* incarcare */
+#loading{position:fixed;inset:0;z-index:900;display:flex;flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(circle at 30% 20%,rgba(61,139,255,.35),transparent 55%),radial-gradient(circle at 70% 80%,rgba(255,77,94,.3),transparent 55%),#06080e;transition:opacity .6s}
+#loading.out{opacity:0;pointer-events:none}
+#loading .brand{font-size:72px;font-weight:900;font-style:italic}
+#loading .brand span{color:var(--red)} #loading .brand i{color:var(--blue)}
+#loading .spin{width:46px;height:46px;border-radius:50%;border:4px solid rgba(255,255,255,.12);border-top-color:var(--accent);animation:rot 1s linear infinite;margin:28px 0 18px}
+@keyframes rot{to{transform:rotate(360deg)}}
+#loading .tip{max-width:560px;text-align:center;color:#cfd6e2;font-size:15px;min-height:44px}
+#loading .rules{position:absolute;bottom:30px;display:flex;gap:12px;flex-wrap:wrap;justify-content:center;max-width:900px}
+#loading .rules div{background:rgba(255,255,255,.06);border:1px solid var(--line);padding:8px 14px;border-radius:12px;font-size:12px;color:var(--sub)}
+/* factiuni */
+.fac{display:flex;gap:14px;align-items:center;padding:14px 16px;border-radius:16px;background:var(--bg2);border-left:5px solid #fff;margin-bottom:10px;cursor:pointer}
+.fac:hover{background:var(--bg3)} .fac .t{flex:1} .fac h3{font-size:16px}
+.fac.sec{opacity:.55;border-color:#555}
+/* skins */
+.skgrid{display:grid;grid-template-columns:repeat(8,1fr);gap:10px}
+.sk{height:124px;border-radius:14px;background:var(--bg2);border:2px solid transparent;position:relative;overflow:hidden;cursor:pointer;display:flex;align-items:flex-end;justify-content:center;font-size:11px;padding-bottom:4px}
+.sk img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
+.sk span{position:relative;background:rgba(0,0,0,.6);padding:1px 7px;border-radius:7px}
+.sk.own{border-color:rgba(51,209,122,.5)} .sk.cur{border-color:var(--accent)} .sk.prem:after{content:"💎";position:absolute;top:4px;right:6px}
+.sk.sel{outline:3px solid #fff}
+/* lada */
+.strip{position:relative;height:150px;overflow:hidden;border-radius:16px;background:rgba(0,0,0,.35);margin:20px 0}
+.strip .track{position:absolute;left:0;top:15px;display:flex;gap:10px;transition:transform 7s cubic-bezier(.08,.6,.12,1)}
+.strip .it{width:120px;height:120px;flex-shrink:0;border-radius:14px;background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.02));border-bottom:5px solid #888;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;font-size:12px;font-weight:700;padding:6px}
+.strip .it .e{font-size:40px;margin-bottom:6px}
+.strip .mark{position:absolute;left:50%;top:0;bottom:0;width:3px;background:var(--accent);transform:translateX(-50%);z-index:2;box-shadow:0 0 12px var(--accent)}
+/* spawn */
+.spawns{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.sp{padding:22px;border-radius:18px;background:var(--bg2);border:1px solid var(--line);cursor:pointer;transition:.15s}
+.sp:hover{background:var(--bg3);transform:translateY(-3px);border-color:var(--accent)}
+.sp .e{font-size:40px} .sp h3{margin:10px 0 4px}
+/* radio */
+.stations{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.st{padding:16px;border-radius:16px;background:var(--bg2);cursor:pointer;display:flex;gap:12px;align-items:center;border:1px solid var(--line)}
+.st:hover{background:var(--bg3)} .st.on{border-color:var(--green);background:rgba(51,209,122,.12)}
+.st .lg{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:16px}
+.eq{display:inline-flex;gap:2px;align-items:flex-end;height:14px;margin-left:6px}
+.eq i{width:3px;background:var(--green);animation:eq .8s infinite ease-in-out}
+.eq i:nth-child(2){animation-delay:.2s} .eq i:nth-child(3){animation-delay:.4s}
+@keyframes eq{0%,100%{height:3px}50%{height:14px}}
+/* interactiune */
+#ring{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.25)}
+#ring .c{position:relative;width:420px;height:420px}
+#ring .mid{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:150px;height:150px;border-radius:50%;background:var(--bg);border:1px solid var(--line);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:10px}
+#ring .o{position:absolute;width:104px;height:84px;margin:-42px 0 0 -52px;border-radius:18px;background:var(--bg);border:1px solid var(--line);display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:11px;font-weight:600;cursor:pointer;text-align:center;transition:.12s;animation:pop .2s}
+#ring .o:hover{background:var(--accent);color:#1a1300;transform:scale(1.08)}
+#ring .o .e{font-size:24px;margin-bottom:4px}
+#ringin{position:absolute;left:50%;top:calc(50% + 230px);transform:translateX(-50%);width:340px}
+/* buletin */
+#card{position:fixed;right:30px;bottom:300px;width:380px;border-radius:20px;padding:18px;background:linear-gradient(135deg,#eaf0f7,#c8d7ea);color:#132;box-shadow:0 20px 60px rgba(0,0,0,.5);animation:nin .4s}
+#card.lic{background:linear-gradient(135deg,#fdf0d5,#f2d39a)}
+#card .row{display:flex;gap:14px} #card .ph{width:96px;height:120px;border-radius:12px;background:#9fb2c8;position:relative;overflow:hidden}
+#card .ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
+#card small{display:block;font-size:10px;color:#567;text-transform:uppercase;letter-spacing:1px} #card b{font-size:14px}
+/* progres */
+#prog{position:fixed;left:50%;bottom:110px;transform:translateX(-50%);width:420px;background:var(--bg);border-radius:16px;padding:12px 16px;box-shadow:0 10px 30px rgba(0,0,0,.5)}
+#prog .pb{height:10px;border-radius:6px;background:rgba(255,255,255,.08);overflow:hidden;margin-top:8px}
+#prog .pb div{height:100%;background:linear-gradient(90deg,var(--accent),var(--green));transition:width .9s linear}
+#prog .pb.ind div{width:35%!important;animation:ind 1.2s infinite ease-in-out}
+@keyframes ind{0%{transform:translateX(-100%)}100%{transform:translateX(300%)}}
+/* kill feed */
+#kills{position:fixed;right:22px;top:300px;display:flex;flex-direction:column;gap:6px;align-items:flex-end}
+#kills div{background:rgba(10,12,18,.8);padding:6px 12px;border-radius:10px;font-size:13px;font-weight:700;animation:nin .3s}
+#kills div.out{animation:nout .5s forwards}
+/* tutorial */
+#tut{position:fixed;left:24px;top:110px;width:330px;background:var(--bg);border:1px solid rgba(255,176,32,.4);border-radius:18px;padding:14px 16px;box-shadow:0 10px 30px rgba(0,0,0,.4);animation:nin .4s}
+#tut .dots{display:flex;gap:5px;margin:8px 0} #tut .dots i{flex:1;height:5px;border-radius:3px;background:rgba(255,255,255,.12)} #tut .dots i.on{background:var(--accent)}
 </style>
 </head>
 <body>
@@ -285,6 +354,12 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
 </div>
 
 <div id="notes"></div>
+<div id="kills"></div>
+<div id="tut" class="hidden"></div>
+<div id="prog" class="hidden"><b id="pg-t"></b> <span class="muted" id="pg-s"></span><div class="pb" id="pg-b"><div id="pg-f" style="width:0"></div></div></div>
+<div id="cardroot"></div>
+<div id="loading" class="hidden"><div class="brand">RPG<span>.</span><i>RO</i></div><div class="spin"></div><div class="tip" id="ld-tip"></div>
+<div class="rules"><div>🚫 Fara DM (omor fara motiv)</div><div>🚗 Fara DB (calcat cu masina)</div><div>🎭 Respecta roleplay-ul</div><div>🛠️ Probleme? /report</div><div>📱 Telefon: Y · Meniu jucator: H</div></div></div>
 <div id="root"></div>
 <div id="dlgroot"></div>
 <div id="drag" class="hidden"></div>
@@ -878,14 +953,140 @@ MODS.stats = function(d){
   root.innerHTML = shell("🪪","linear-gradient(135deg,#ff4d5e,#ffb020)","Fisa cetateanului","Los Santos · RPG.RO",body,"");
 };
 
+
+/* ===================== ECRAN DE INCARCARE ===================== */
+const TIPS = ["Apasa Y ca sa deschizi telefonul.","Langa un jucator, apasa H pentru meniul de interactiune.","/jobs iti arata toate joburile si cat platesc.","La fiecare ora primesti PayDay - stai online!","Battle Pass: /pass. Misiunile iti dau XP.","/gps te duce oriunde in oras.","Depune banii la banca - cei din buzunar se pot pierde.","/skins = garderoba ta. /radio = radio in masina."];
+function loadingShow(){ const l=$("#loading"); l.classList.remove("hidden","out"); let i=Math.floor(Math.random()*TIPS.length); const t=()=>{ $("#ld-tip").textContent="💡 "+TIPS[i++%TIPS.length]; }; t(); clearInterval(window._ldt); window._ldt=setInterval(t,4000); }
+function loadingHide(){ const l=$("#loading"); if(l.classList.contains("hidden")) return; l.classList.add("out"); clearInterval(window._ldt); setTimeout(()=>l.classList.add("hidden"),700); }
+
+/* ===================== /factions ===================== */
+const FAC_E = {1:"🚓",2:"🗡️",3:"🚑",4:"📰",5:"🎩",6:"🚒"};
+MODS.factions = function(d){
+  const [h, s] = d.split("#"), adm = h==="1";
+  const list = rows(s);
+  root.innerHTML = shell("🏛️","#ffd700","Factiunile orasului","Click pe o factiune = HQ-ul pe harta",
+    list.map(f=>{ const sec = f[7]==="1", col = sec ? "#555" : "#"+f[3];
+      return '<div class="fac'+(sec?" sec":"")+'" style="border-color:'+col+'" onclick="act(\'factions\',\'gps\','+f[0]+')"><div style="font-size:30px">'+(sec?"❓":(FAC_E[f[0]]||"🛡️"))+'</div><div class="t"><h3 style="color:'+col+'">'+(sec?"??? (factiune secreta)":esc(f[1])+' <span class="muted" style="font-size:12px">['+esc(f[2])+']</span>')+'</h3>'+
+        '<div class="muted" style="font-size:13px">'+(sec?"Lider: necunoscut · HQ: nimeni nu stie":"Lider: <b style=\"color:#fff\">"+esc(f[4])+"</b> · HQ: "+esc(f[6]))+'</div></div>'+
+        '<div style="text-align:right"><b style="font-size:18px">'+(sec?"?":f[5])+'</b><div class="muted" style="font-size:11px">online</div>'+(adm&&+f[8]>=0?'<div class="money" style="font-size:12px">'+fmt(f[8])+'</div>':"")+'</div></div>'; }).join(""),"");
+};
+
+/* ===================== /skins ===================== */
+let SK = {f:0, sel:-1, q:""};
+MODS.skins = function(d){ SK.sel=-1; drawSkins(d); };
+UPD.skins = function(d){ drawSkins(d); };
+function drawSkins(d){
+  SK.d = d;
+  const [h, s] = d.split("#"), p = h.split("|"), money=+p[0], pp=+p[1], price=+p[2], pprice=+p[3], cur=+p[4], can=p[5]==="1";
+  const all = rows(s).map(x=>({id:+x[0], own:(+x[1]&1)>0, prem:(+x[1]&2)>0}));
+  const view = all.filter(x=>SK.f===0 || (SK.f===1&&x.own) || (SK.f===2&&x.prem)).filter(x=>!SK.q || String(x.id).startsWith(SK.q));
+  const tabs = '<div class="tabs">'+["Toate ("+all.length+")","Ale mele ("+all.filter(x=>x.own).length+")","Premium 💎"].map((t,i)=>'<div class="'+(SK.f===i?"on":"")+'" onclick="SK.f='+i+';drawSkins(SK.d)">'+t+'</div>').join("")+'</div>';
+  const sel = all.find(x=>x.id===SK.sel);
+  let foot = '<span class="muted" style="margin-right:auto">Bani: <b class="money">'+fmt(money)+'</b> · 💎 '+pp+(can?"":' · <span class="red">nu te poti schimba acum</span>')+'</span>';
+  if(sel) foot = '<b style="margin-right:auto">Skin #'+sel.id+(sel.prem?" 💎 premium":"")+'</b>'+(sel.own ? (sel.id===cur?'<span class="badge ok">il porti</span>':'<button class="grn" '+(can?"":"disabled")+' onclick="act(\'skins\',\'wear\','+sel.id+')">Imbraca</button>')
+    : '<button class="pri" onclick="act(\'skins\',\'buy\','+sel.id+')">Cumpara '+(sel.prem?"💎 "+pprice:fmt(price))+'</button>');
+  const sy = $("#wb") ? $("#wb").scrollTop : 0;
+  root.innerHTML = shell("👕","#ff5fa2","Garderoba","Click = alegi · skin-urile cumparate raman ale tale",
+    '<input id="sk-q" placeholder="Cauta dupa numar..." value="'+esc(SK.q)+'" style="margin-bottom:12px"><div class="skgrid">'+view.map(x=>'<div class="sk'+(x.own?" own":"")+(x.prem?" prem":"")+(x.id===cur?" cur":"")+(x.id===SK.sel?" sel":"")+'" onclick="SK.sel='+x.id+';drawSkins(SK.d)">'+skinImg(x.id)+'<span>#'+x.id+'</span></div>').join("")+'</div>', foot, tabs);
+  $("#wb").scrollTop = sy;
+  const qi=$("#sk-q"); qi.addEventListener("input",()=>{ SK.q=qi.value.trim(); drawSkins(SK.d); const n=$("#sk-q"); n.focus(); n.setSelectionRange(n.value.length,n.value.length); });
+}
+
+/* ===================== LAZI ===================== */
+const CR_E = ["💵","💎","👑","🚗","💰"];
+MODS.crate = function(d){
+  const [h, s] = d.split("#"), p = h.split("|"), fin = +p[2];
+  const items = rows(s);
+  root.innerHTML = shell("🎁",["#cd7f32","#c0c0c0","#ffd700"][+p[0]]||"#ffb020","Deschizi Lada "+esc(p[1]),"Mult noroc!",
+    '<div class="strip"><div class="mark"></div><div class="track" id="cr-t">'+items.map(x=>'<div class="it" style="border-color:#'+x[1]+'"><div class="e">'+(CR_E[+x[2]]||"🎁")+'</div>'+esc(x[0])+'</div>').join("")+'</div></div><div class="result" id="cr-r">Se invarte...</div>',"");
+  const tr = $("#cr-t"), w = 130, off = Math.floor(Math.random()*80)-40;
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{ const box = tr.parentNode.clientWidth; tr.style.transform = "translateX("+(box/2 - (fin*w + 60) + off)+"px)"; }));
+};
+UPD.crate = function(d){ const p=d.split("|"); if(p[0]==="done"){ const r=$("#cr-r"); if(r) r.innerHTML='<span class="money">'+esc(p[1])+'</span>'; } };
+
+/* ===================== SPAWN ===================== */
+const SP_E = {last:"📍",house:"🏠",hq:"🛡️",hotel:"🛏️",center:"🏙️",hospital:"🏥"};
+MODS.spawn = function(d){
+  root.innerHTML = '<div id="ov"><div class="win" style="width:min(900px,94vw)"><div class="wh"><div class="ic">🗺️</div><div><h2>Unde vrei sa apari?</h2><p>Alege locul de start</p></div></div><div class="wb"><div class="spawns">'+
+    rows(d).map(x=>'<div class="sp" onclick="act(\'spawn\',\'pick\',\''+x[0]+'\')"><div class="e">'+(SP_E[x[0]]||"📍")+'</div><h3>'+esc(x[1])+'</h3><div class="muted">'+esc(x[2])+'</div></div>').join("")+'</div></div></div></div>';
+};
+
+/* ===================== RADIO ===================== */
+const RCOL = ["#ff4d5e","#3d8bff","#33d17a","#ffb020","#a66cff","#ff5fa2","#00c2c7"];
+let RD = {};
+MODS.radio = function(d){ const [h,s]=d.split("#"), p=h.split("|"); RD.cur=+p[0]; RD.veh=p[1]; RD.list=rows(s); drawRadio(); };
+UPD.radio = function(d){ const p=d.split("|"); if(p[0]==="cur"){ RD.cur=+p[1]; drawRadio(); } };
+function drawRadio(){
+  const cur = RD.list.find(x=>+x[0]===RD.cur);
+  root.innerHTML = shell("📻","#33d17a","Radio",esc(RD.veh)+" · toti din masina aud acelasi post",
+    '<div class="card" style="margin-bottom:14px;display:flex;align-items:center;gap:12px"><div style="font-size:30px">'+(cur?"🎶":"🔇")+'</div><div style="flex:1"><div class="muted" style="font-size:12px">Acum</div><b style="font-size:18px">'+(cur?esc(cur[1]):"Radio oprit")+'</b>'+(cur?'<span class="eq"><i></i><i></i><i></i></span>':"")+'</div>'+(cur?'<button class="red" onclick="act(\'radio\',\'play\',-1)">Opreste</button>':"")+'</div>'+
+    '<div class="stations">'+RD.list.map((x,i)=>'<div class="st'+(+x[0]===RD.cur?" on":"")+'" onclick="act(\'radio\',\'play\','+x[0]+')"><div class="lg" style="background:'+RCOL[i%RCOL.length]+'">'+esc(x[1].replace(/radio/i,"").trim().slice(0,2).toUpperCase())+'</div><b>'+esc(x[1])+'</b></div>').join("")+'</div>',"");
+}
+
+/* ===================== MENIU INTERACTIUNE ===================== */
+const IA_E = {pay:"💵",showid:"🪪",showlic:"📄",give:"🎒",cuff:"🔗",uncuff:"🔓",drag:"🫳",frisk:"🔍",checklic:"🧾",ticket:"🧾",mdt:"🚓",revive:"❤️",treat:"🩺"};
+MODS.interact = function(d){
+  const [h, s] = d.split("#"), p = h.split("|"), opts = rows(s);
+  const R = 165;
+  root.innerHTML = '<div id="ring"><div class="c"><div class="mid"><div style="font-size:30px">👤</div><b>'+esc(p[1])+'</b><span class="muted" style="font-size:12px">ID '+p[0]+' · Lvl '+p[2]+' · '+esc(p[3])+'</span></div>'+
+    opts.map((o,i)=>{ const a = -Math.PI/2 + i*2*Math.PI/opts.length, x = 210+R*Math.cos(a), y = 210+R*Math.sin(a);
+      return '<div class="o" style="left:'+x+'px;top:'+y+'px" onclick="iaPick(\''+o[0]+'\','+o[2]+',\''+esc(o[1])+'\')"><div class="e">'+(IA_E[o[0]]||"•")+'</div>'+esc(o[1])+'</div>'; }).join("")+
+    '</div><div id="ringin"></div></div>';
+};
+function iaPick(k, inp, label){
+  if(+inp===0){ act("interact",k); return; }
+  $("#ringin").innerHTML = '<div class="card" style="background:var(--bg)"><b>'+label+'</b><input id="ia-a" type="number" min="1" placeholder="suma" style="margin:8px 0">'+(+inp===2?'<input id="ia-r" placeholder="motivul" style="margin-bottom:8px">':"")+'<button class="pri" style="width:100%" onclick="act(\'interact\',\''+k+'\',$(\'#ia-a\').value||0,(($(\'#ia-r\')||{}).value||\'\').replace(/[|]/g,\'\'))">Trimite</button></div>';
+  setTimeout(()=>$("#ia-a").focus(),30);
+}
+
+/* ===================== BULETIN / PERMISE ===================== */
+function showCard(d){
+  const p = d.split("|"), lic = p[0]==="1";
+  const yn = v=>v==="1"?'<b style="color:#138a3e">DA</b>':'<b style="color:#c0141c">NU</b>';
+  $("#cardroot").innerHTML = '<div id="card" class="'+(lic?"lic":"")+'"><div style="display:flex;justify-content:space-between;margin-bottom:10px"><b>'+(lic?"PERMISE · LOS SANTOS":"CARTE DE IDENTITATE")+'</b><b>🇷🇴 RPG.RO</b></div><div class="row"><div class="ph">'+skinImg(p[7])+'</div><div style="flex:1;display:grid;gap:6px">'+
+    '<div><small>Nume</small><b>'+esc(p[1])+'</b></div>'+(lic?'<div><small>Permis auto</small>'+yn(p[4])+'</div><div><small>Port-arma</small>'+yn(p[5])+'</div>'
+      :'<div><small>Telefon</small><b>'+esc(p[3])+'</b></div><div><small>Ocupatie</small><b>'+esc(p[6])+'</b></div><div><small>Level · ore in oras</small><b>'+p[2]+' · '+p[8]+'h</b></div>')+'</div></div></div>';
+  clearTimeout(window._cardt); window._cardt = setTimeout(()=>{ $("#cardroot").innerHTML=""; }, 8000);
+}
+
+/* ===================== PROGRES / KILL FEED / TUTORIAL ===================== */
+function progress(d){
+  const p = d.split("|"), el = $("#prog");
+  if(p[0]==="0"){ el.classList.add("hidden"); return; }
+  el.classList.remove("hidden");
+  $("#pg-t").textContent = p[0];
+  $("#pg-s").textContent = +p[2]>0 ? p[2]+" sec" : "";
+  const ind = +p[1] < 0; $("#pg-b").classList.toggle("ind", ind);
+  if(!ind) $("#pg-f").style.width = p[1]+"%";
+}
+function killfeed(d){
+  const p = d.split("|"), el = document.createElement("div");
+  el.innerHTML = '<span style="color:#'+p[3]+'">'+esc(p[0])+'</span> <span class="muted">['+esc(p[2])+']</span> <span style="color:#'+p[4]+'">'+esc(p[1])+'</span>';
+  $("#kills").prepend(el);
+  while($("#kills").children.length > 6) $("#kills").lastChild.remove();
+  setTimeout(()=>{ el.classList.add("out"); setTimeout(()=>el.remove(),500); }, 7000);
+}
+function tutorial(d){
+  const p = d.split("|"), el = $("#tut");
+  if(p[0]==="0"){ el.classList.add("hidden"); return; }
+  const n=+p[0], tot=+p[1];
+  el.classList.remove("hidden");
+  el.innerHTML = '<div style="display:flex;justify-content:space-between"><b class="gold">🎓 Tutorial</b><span class="muted">pasul '+n+' / '+tot+'</span></div><div class="dots">'+Array.from({length:tot},(_,i)=>'<i class="'+(i<n?"on":"")+'"></i>').join("")+'</div><b style="font-size:15px">'+esc(p[2])+'</b><div style="font-size:13px;color:#d8dde6;margin-top:4px">'+esc(p[3])+'</div><div class="muted" style="font-size:11px;margin-top:6px">Premiu: $5.000 + Lada de Bronz · /tutorial opreste</div>';
+}
+
 /* ===================== EVENIMENTE DE LA SERVER ===================== */
 if(HAS_CEF){
-  cef.on("ui:hud", d=>hud(String(d)));
+  cef.on("ui:hud", d=>{ loadingHide(); hud(String(d)); });
   cef.on("ui:speedo", d=>speedo(String(d)));
+  cef.on("ui:prog", d=>progress(String(d)));
+  cef.on("ui:kill", d=>killfeed(String(d)));
+  cef.on("ui:tut", d=>tutorial(String(d)));
+  cef.on("ui:card", d=>showCard(String(d)));
+  loadingShow();
   cef.on("ui:dlgp", d=>{ DLGBUF += String(d==null?"":d); });
   cef.on("ui:dlg", d=>{ d=String(d); if(d==="hide"){ DLG=null; DLGBUF=""; $("#dlgroot").innerHTML=""; if(!MOD) setFocus(false); return; } dlgShow(d); });
   cef.on("ui:notify", (t,a,b)=>notify(String(t),String(a),String(b)));
-  cef.on("ui:login", d=>{ LAST_LOGIN=String(d); if(String(d).charAt(0)==="0"){ MODS.login(LAST_LOGIN); return; } MOD="login"; setFocus(true); MODS.login(LAST_LOGIN); });
+  cef.on("ui:login", d=>{ loadingHide(); LAST_LOGIN=String(d); if(String(d).charAt(0)==="0"){ MODS.login(LAST_LOGIN); return; } MOD="login"; setFocus(true); MODS.login(LAST_LOGIN); });
   cef.on("ui:open", (m,d)=>{ if(MOD==="login") return; openMod(String(m), String(d==null?"":d)); });
   cef.on("ui:data", (m,d)=>updMod(String(m), String(d==null?"":d)));
   cef.on("ui:close", ()=>{ if(MOD && MOD!=="login"){ const m=MOD; MOD=null; root.innerHTML=""; setFocus(false); } else if(!MOD){ const dd=$("#death"); if(dd) root.innerHTML=""; } });
@@ -914,6 +1115,12 @@ if(HAS_CEF){
     admin:"6#2~Mihai_Rusu~Ma bug-uieste masina~-",
     casino:"8500|0",
     death:"1|Vasile_Tanc|Desert Eagle|74|2",
+    factions:"1#1~Los Santos Police Department~LSPD~2641FE~Ion_Popescu~4~Pershing Square~0~245000;2~Ordinul Umbrei~UMBRA~8B0000~-~1~-~1~0;3~Serviciul Medical~SMURD~FF4F7B~Ana_Stan~2~Spitalul All Saints~0~90000",
+    skins:"25400|245|500|75|29|1#1~0;2~1;7~1;15~0;29~1;102~2;115~3;170~0;217~0;250~0",
+    crate:"2|Aur|35#"+Array.from({length:40},(_,i)=>["$3200~8E8E8E~0~1212","25 Emeralde~D32CE6~1~1247","Infernus~FFD700~3~411","VIP 7z~8847FF~2~1314"][i%4]).join(";"),
+    spawn:"last~Unde ai iesit~Continui de unde ai ramas;house~Acasa~Casa - Idlewood;hq~Sediul factiunii~LSPD;center~Centrul orasului~Pershing Square;hospital~Spitalul All Saints~Langa medici",
+    radio:"2|Infernus#0~Radio ZU;1~Kiss FM;2~Europa FM;3~Magic FM;4~Rock FM;5~Pro FM;6~Digi FM",
+    interact:"4|Mihai_Rusu|5|Civil#pay~Da bani~1;showid~Arata buletinul~0;showlic~Arata permisele~0;give~Da un obiect~0;cuff~Pune catuse~0;frisk~Perchezitioneaza~0;ticket~Amenda~2;mdt~Deschide in MDT~0",
     stats:"Ion_Popescu|Cetatean model|12|30|48|22|25400|180350|245|134|Pescar|3|LSPD - Sergent|[RO] Romanii|2|6|0|0|5|Bronze|7|6|29|0"
   };
   const bar = document.createElement("div");
@@ -928,9 +1135,11 @@ if(HAS_CEF){
     if(k==="admin") UPD.admin("0~Ion_Popescu~12~2500~35;4~Mihai_Rusu~5~900~90");
   }; bar.appendChild(b); });
   document.body.appendChild(bar);
+  progress("Jefuiesti casa de marcat|60|12"); killfeed("Ion_Popescu|Mihai_Rusu|Desert Eagle|2641FE|FFFFFF"); tutorial("2|5|Alege-ti un job|Scrie /jobs si alege un job.");
+  showCard("0|Ion_Popescu|12|071000001|1|0|LSPD|29|134");
   window.act = function(){ console.log("act", Array.from(arguments).join("|")); };
 }
 </script>
-<div style="position:fixed;left:6px;bottom:2px;font-size:10px;opacity:.35;color:#fff;pointer-events:none">ui v2</div>
+<div style="position:fixed;left:6px;bottom:2px;font-size:10px;opacity:.35;color:#fff;pointer-events:none">ui v3</div>
 </body>
 </html>
