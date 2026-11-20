@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<title>RPG UI</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+:root{
+  --bg:rgba(14,16,22,.92); --bg2:rgba(255,255,255,.06); --bg3:rgba(255,255,255,.11); --line:rgba(255,255,255,.09);
+  --text:#f2f4f8; --sub:#9aa3b2; --accent:#ffb020; --green:#33d17a; --red:#ff4d5e; --blue:#3d8bff; --purple:#a66cff; --pink:#ff5fa2;
+  --r:18px;
+}
+*{box-sizing:border-box;margin:0;padding:0;user-select:none;-webkit-user-select:none}
+html,body{width:100%;height:100%;overflow:hidden;background:transparent;color:var(--text);
+  font-family:"Segoe UI",Roboto,Helvetica,Arial,sans-serif;font-size:14px}
+body.preview{background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Crect width='40' height='40' fill='%23263040'/%3E%3Cpath d='M0 40L40 0' stroke='%23303b4d' stroke-width='2'/%3E%3C/svg%3E")}
+.hidden{display:none !important}
+b{font-weight:700}
+.money{color:var(--green)} .muted{color:var(--sub)} .red{color:var(--red)} .gold{color:var(--accent)}
+button,.btn{font:inherit;color:var(--text);background:var(--bg3);border:1px solid var(--line);border-radius:12px;padding:9px 14px;cursor:pointer;transition:.15s;font-weight:600}
+button:hover,.btn:hover{background:rgba(255,255,255,.18)}
+button.pri{background:var(--accent);color:#1a1300;border-color:transparent}
+button.pri:hover{filter:brightness(1.1)}
+button.grn{background:var(--green);color:#03210f;border-color:transparent}
+button.red{background:var(--red);color:#fff;border-color:transparent}
+button:disabled{opacity:.4;cursor:default}
+input,select{font:inherit;color:var(--text);background:rgba(0,0,0,.35);border:1px solid var(--line);border-radius:12px;padding:10px 12px;outline:none;width:100%;user-select:text;-webkit-user-select:text}
+input:focus{border-color:var(--accent)}
+::-webkit-scrollbar{width:8px} ::-webkit-scrollbar-thumb{background:rgba(255,255,255,.18);border-radius:8px}
+
+/* ---------------- cursor propriu (cel al jocului e SUB browser) ---------------- */
+#cursor{position:fixed;left:50%;top:50%;width:26px;height:26px;pointer-events:none;z-index:99999;display:none;transform:translate(-2px,-2px)}
+#cursor svg{width:26px;height:26px;filter:drop-shadow(0 1px 2px rgba(0,0,0,.7))}
+body.focus #cursor{display:block}
+body.cef.focus, body.cef.focus *{cursor:none !important}
+
+/* ---------------- HUD ---------------- */
+#hud{position:fixed;top:18px;right:22px;width:300px;display:flex;flex-direction:column;align-items:flex-end;gap:6px;transition:opacity .3s;text-shadow:0 2px 4px rgba(0,0,0,.8)}
+#hud .logo{font-weight:900;font-size:26px;letter-spacing:1px;font-style:italic}
+#hud .logo span{color:var(--red)} #hud .logo i{color:var(--blue);font-style:italic}
+#hud .clock{font-size:13px;color:#ddd;font-weight:600}
+#hud .row{display:flex;gap:8px;align-items:center}
+#hud .cash{font-size:26px;font-weight:800;color:#5bea8f}
+#hud .bank{font-size:14px;color:#cfe;font-weight:600;opacity:.9}
+.pill{background:rgba(0,0,0,.45);border-radius:20px;padding:3px 10px;font-size:12px;font-weight:700;text-shadow:none}
+.bars{width:200px;display:flex;flex-direction:column;gap:4px}
+.bar{height:7px;border-radius:5px;background:rgba(0,0,0,.5);overflow:hidden}
+.bar>div{height:100%;border-radius:5px;transition:width .4s}
+.hp>div{background:linear-gradient(90deg,#ff3d4f,#ff7b6b)} .ar>div{background:linear-gradient(90deg,#c9d6e8,#ffffff)}
+.lvl{display:flex;align-items:center;gap:8px}
+.lvl .c{width:38px;height:38px;border-radius:50%;background:conic-gradient(var(--accent) var(--p,0%),rgba(0,0,0,.45) 0);display:flex;align-items:center;justify-content:center}
+.lvl .c div{width:30px;height:30px;border-radius:50%;background:rgba(10,12,18,.9);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;text-shadow:none}
+.stars{font-size:18px;letter-spacing:1px}
+.stars .on{color:#ffd23d} .stars .off{color:rgba(255,255,255,.18)}
+.delta{position:absolute;right:0;font-weight:800;font-size:20px;animation:dl 2.2s forwards}
+@keyframes dl{0%{opacity:0;transform:translateY(0)}10%{opacity:1}100%{opacity:0;transform:translateY(-40px)}}
+
+/* ---------------- vitezometru ---------------- */
+#speedo{position:fixed;right:34px;bottom:34px;width:230px;height:230px;transition:opacity .3s,transform .3s}
+#speedo.off{opacity:0;transform:translateY(30px)}
+#speedo svg{position:absolute;inset:0}
+#speedo .num{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-shadow:0 2px 6px rgba(0,0,0,.9)}
+#speedo .num b{font-size:58px;line-height:1;font-weight:800}
+#speedo .num small{font-size:12px;color:#ccc;letter-spacing:2px}
+#speedo .vn{font-size:12px;color:#ddd;margin-top:4px;font-weight:600}
+#speedo .icons{position:absolute;left:0;right:0;bottom:6px;display:flex;justify-content:center;gap:10px;font-size:15px}
+#speedo .icons span{opacity:.25} #speedo .icons span.on{opacity:1}
+#speedo .side{position:absolute;left:-150px;bottom:26px;width:140px;display:flex;flex-direction:column;gap:8px;text-shadow:0 2px 4px #000}
+#speedo .side .l{font-size:11px;color:#ddd;display:flex;justify-content:space-between;font-weight:600}
+.fuel>div{background:linear-gradient(90deg,#ffb020,#ffd76b)} .vhp>div{background:linear-gradient(90deg,#33d17a,#8af0b4)}
+.fuel.low>div{background:var(--red);animation:blink 1s infinite}
+@keyframes blink{50%{opacity:.35}}
+
+/* ---------------- notificari ---------------- */
+#notes{position:fixed;left:24px;top:38%;width:340px;display:flex;flex-direction:column;gap:10px}
+.note{background:var(--bg);border-left:4px solid var(--blue);border-radius:14px;padding:11px 14px;box-shadow:0 8px 24px rgba(0,0,0,.4);animation:nin .35s ease}
+.note.out{animation:nout .4s forwards}
+.note b{display:block;font-size:13px;margin-bottom:2px}
+.note span{font-size:13px;color:#d8dde6}
+.note.success{border-color:var(--green)} .note.error{border-color:var(--red)} .note.money{border-color:#5bea8f} .note.warning{border-color:var(--accent)} .note.vip{border-color:var(--purple)}
+@keyframes nin{from{opacity:0;transform:translateX(-40px)}to{opacity:1;transform:none}}
+@keyframes nout{to{opacity:0;transform:translateX(-40px)}}
+
+/* ---------------- ferestre ---------------- */
+#ov{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.35);animation:fade .2s}
+@keyframes fade{from{opacity:0}}
+.win{width:min(980px,94vw);max-height:88vh;background:var(--bg);border:1px solid var(--line);border-radius:24px;box-shadow:0 30px 80px rgba(0,0,0,.6);display:flex;flex-direction:column;overflow:hidden;animation:pop .25s ease}
+@keyframes pop{from{transform:scale(.96);opacity:0}}
+.wh{display:flex;align-items:center;gap:12px;padding:18px 22px;border-bottom:1px solid var(--line)}
+.wh .ic{width:42px;height:42px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:22px;background:var(--accent)}
+.wh h2{font-size:19px} .wh p{font-size:12px;color:var(--sub)}
+.wh .x{margin-left:auto;width:36px;height:36px;border-radius:50%;padding:0;font-size:17px}
+.wb{padding:18px 22px;overflow:auto;flex:1}
+.wf{padding:14px 22px;border-top:1px solid var(--line);display:flex;gap:10px;align-items:center}
+.tabs{display:flex;gap:6px;padding:0 22px 0;border-bottom:1px solid var(--line)}
+.tabs div{padding:12px 14px;cursor:pointer;color:var(--sub);font-weight:600;border-bottom:2px solid transparent}
+.tabs div.on{color:var(--text);border-color:var(--accent)}
+.grid{display:grid;gap:12px}
+.card{background:var(--bg2);border:1px solid var(--line);border-radius:16px;padding:14px}
+.card:hover{background:var(--bg3)}
+.stat{background:var(--bg2);border-radius:16px;padding:14px}
+.stat small{display:block;color:var(--sub);font-size:12px;margin-bottom:4px}
+.stat b{font-size:22px}
+table{width:100%;border-collapse:collapse}
+th{font-size:12px;color:var(--sub);text-align:left;font-weight:600;padding:8px 10px;border-bottom:1px solid var(--line);position:sticky;top:0;background:#141820}
+td{padding:9px 10px;border-bottom:1px solid rgba(255,255,255,.04)}
+tr.sel td{background:rgba(255,176,32,.12)}
+tbody tr{cursor:pointer} tbody tr:hover td{background:rgba(255,255,255,.04)}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px}
+
+/* login */
+#login{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
+  background:radial-gradient(circle at 20% 20%,rgba(61,139,255,.35),transparent 50%),radial-gradient(circle at 80% 80%,rgba(255,77,94,.3),transparent 50%),rgba(6,8,14,.82);backdrop-filter:blur(6px)}
+#login .box{width:420px;background:rgba(16,19,27,.9);border:1px solid var(--line);border-radius:28px;padding:34px;box-shadow:0 30px 90px rgba(0,0,0,.6);animation:pop .4s}
+#login .brand{font-size:40px;font-weight:900;font-style:italic;text-align:center}
+#login .brand span{color:var(--red)} #login .brand i{color:var(--blue)}
+#login .hi{text-align:center;color:var(--sub);margin:6px 0 24px}
+#login .hi b{color:var(--accent)}
+#login label{display:block;font-size:12px;color:var(--sub);margin:12px 0 6px}
+#login .err{color:var(--red);font-size:13px;min-height:18px;margin-top:10px;text-align:center}
+#login button.pri{width:100%;margin-top:16px;padding:13px;font-size:15px}
+.skins{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.skin{height:86px;border-radius:14px;background:var(--bg2);border:2px solid transparent;display:flex;align-items:flex-end;justify-content:center;overflow:hidden;cursor:pointer;position:relative;font-size:11px;color:var(--sub)}
+.skin img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
+.skin.on{border-color:var(--accent)}
+.gend{display:flex;gap:8px;margin-bottom:8px} .gend button{flex:1}
+.gend button.on{background:var(--accent);color:#1a1300}
+
+/* inventar */
+.inv{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+.slot{height:86px;border-radius:16px;background:var(--bg2);border:1px solid var(--line);display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;cursor:pointer;transition:.15s}
+.slot:hover{background:var(--bg3)} .slot.sel{border-color:var(--accent);box-shadow:0 0 0 2px rgba(255,176,32,.3) inset}
+.slot .e{font-size:28px} .slot .n{font-size:11px;text-align:center;padding:0 4px;margin-top:4px;color:#dfe3ea;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:100%}
+.slot .q{position:absolute;top:6px;right:9px;font-size:12px;font-weight:700;color:var(--accent)}
+.slot .w{position:absolute;top:6px;left:9px;font-size:10px;color:var(--sub)}
+.slot.empty{opacity:.35;cursor:default}
+.slot.over{border-color:var(--blue);background:rgba(61,139,255,.15)}
+.zones{display:flex;gap:10px}
+.zone{flex:1;border:2px dashed var(--line);border-radius:14px;padding:12px;text-align:center;color:var(--sub);font-weight:600}
+.zone.over{border-color:var(--accent);color:var(--text);background:rgba(255,176,32,.08)}
+.wbar{height:10px;border-radius:6px;background:rgba(255,255,255,.08);overflow:hidden;flex:1}
+.wbar div{height:100%;background:linear-gradient(90deg,var(--green),var(--accent),var(--red));background-size:300px 100%}
+#drag{position:fixed;pointer-events:none;font-size:40px;z-index:9999;transform:translate(-50%,-50%)}
+
+/* magazin */
+.items{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.item{display:flex;gap:12px;align-items:center}
+.item .e{width:56px;height:56px;border-radius:14px;background:rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;font-size:30px;flex-shrink:0}
+.item .t{flex:1;min-width:0} .item .t b{display:block;font-size:14px} .item .t span{font-size:13px}
+.qty{display:flex;align-items:center;gap:6px} .qty button{width:30px;height:30px;padding:0;border-radius:9px}
+.qty span{min-width:18px;text-align:center;font-weight:700}
+.cart{width:280px;flex-shrink:0;display:flex;flex-direction:column;gap:8px}
+.cline{display:flex;justify-content:space-between;font-size:13px;padding:6px 0;border-bottom:1px solid var(--line)}
+
+/* dealer (panou in stanga, masina se vede in joc) */
+#dealer{position:fixed;left:24px;top:24px;bottom:24px;width:380px;background:var(--bg);border:1px solid var(--line);border-radius:24px;display:flex;flex-direction:column;overflow:hidden;animation:pop .25s}
+.cats{display:flex;flex-wrap:wrap;gap:6px;padding:12px 18px}
+.cats div{padding:7px 11px;border-radius:10px;background:var(--bg2);cursor:pointer;font-size:12px;font-weight:600}
+.cats div.on{background:var(--accent);color:#1a1300}
+.cars{flex:1;overflow:auto;padding:0 18px}
+.car{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:14px;cursor:pointer;margin-bottom:6px;background:var(--bg2)}
+.car:hover{background:var(--bg3)} .car.on{background:rgba(255,176,32,.16);outline:1px solid var(--accent)}
+.car img{width:70px;height:42px;object-fit:contain}
+.car .t{flex:1} .car .t b{display:block;font-size:14px}
+.dsel{padding:16px 18px;border-top:1px solid var(--line)}
+.dsel h3{font-size:22px} .dsel .p{font-size:24px;font-weight:800;color:var(--green);margin:2px 0 10px}
+.rot{display:flex;gap:8px;margin-bottom:10px} .rot button{flex:1}
+input[type=range]{padding:0;height:6px;-webkit-appearance:none;background:rgba(255,255,255,.15);border:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--accent)}
+
+/* banca */
+.bankcard{border-radius:22px;padding:22px;background:linear-gradient(135deg,#1e4fd6,#0d2a7a 60%,#091a4d);position:relative;overflow:hidden;min-height:170px}
+.bankcard:after{content:"";position:absolute;right:-60px;top:-60px;width:220px;height:220px;border-radius:50%;background:rgba(255,255,255,.08)}
+.bankcard .chip{width:42px;height:30px;border-radius:7px;background:linear-gradient(135deg,#f6d77a,#c99b2e);margin:14px 0}
+.bankcard .bal{font-size:32px;font-weight:800}
+.amts{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0} .amts button{padding:7px 10px;font-size:12px}
+.hist div{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line);font-size:13px}
+
+/* battle pass */
+.bphead{display:flex;gap:16px;align-items:center}
+.xpbar{height:14px;border-radius:8px;background:rgba(255,255,255,.08);overflow:hidden;flex:1}
+.xpbar div{height:100%;background:linear-gradient(90deg,#ffb020,#ff5fa2)}
+.tiers{display:flex;gap:10px;overflow-x:auto;padding-bottom:10px}
+.tier{width:120px;flex-shrink:0;display:flex;flex-direction:column;gap:8px}
+.tier .h{text-align:center;font-weight:800;font-size:13px;padding:5px;border-radius:9px;background:var(--bg2)}
+.tier.unl .h{background:var(--accent);color:#1a1300}
+.rw{height:118px;border-radius:14px;background:var(--bg2);border:1px solid var(--line);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:6px;font-size:12px;position:relative;cursor:pointer}
+.rw .e{font-size:32px;margin-bottom:6px}
+.rw.prem{background:linear-gradient(160deg,rgba(166,108,255,.25),rgba(255,95,162,.12))}
+.rw.lock{opacity:.45;cursor:default}
+.rw.can{border-color:var(--green);box-shadow:0 0 14px rgba(51,209,122,.35)}
+.rw.done:after{content:"✓";position:absolute;top:5px;right:8px;color:var(--green);font-weight:900}
+.rw.done{opacity:.6}
+
+/* moarte */
+#death{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(circle,rgba(80,0,0,.25),rgba(0,0,0,.75));animation:fade 1s}
+#death h1{font-size:72px;font-weight:900;color:#ff3b4b;letter-spacing:6px;text-shadow:0 4px 30px rgba(255,0,0,.5)}
+#death .k{font-size:18px;margin-top:6px;color:#ddd}
+#death .t{font-size:46px;font-weight:800;margin:20px 0 6px}
+#death .btns{display:flex;gap:12px;margin-top:18px}
+#death .btns button{padding:13px 22px;font-size:15px}
+#death.mini{inset:auto;left:50%;bottom:120px;transform:translateX(-50%);background:var(--bg);padding:14px 24px;border-radius:20px;flex-direction:row;gap:18px}
+#death.mini h1{font-size:20px;letter-spacing:1px} #death.mini .t{font-size:22px;margin:0} #death.mini .k,#death.mini .btns{display:none}
+#death.mini .show{display:inline-block}
+#death .show{display:none}
+
+/* cazino */
+.wheel{width:300px;height:300px;border-radius:50%;position:relative;margin:0 auto;border:8px solid #6b4a18;box-shadow:0 0 0 4px #c99b2e,0 20px 50px rgba(0,0,0,.5)}
+.wheel .in{position:absolute;inset:0;border-radius:50%;transition:transform 4s cubic-bezier(.15,.85,.2,1)}
+.wheel .ptr{position:absolute;left:50%;top:-16px;transform:translateX(-50%);width:0;height:0;border-left:12px solid transparent;border-right:12px solid transparent;border-top:24px solid #ffd23d;z-index:3}
+.wheel .hub{position:absolute;inset:34%;border-radius:50%;background:radial-gradient(#c99b2e,#5a3a10);z-index:2;display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:900}
+.bets{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.bets button.on{outline:2px solid var(--accent)}
+.nums{display:grid;grid-template-columns:repeat(13,1fr);gap:4px;margin-top:10px}
+.nums div{padding:6px 0;text-align:center;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer}
+.nums div.on{outline:2px solid #fff}
+.reels{display:flex;gap:12px;justify-content:center;margin:20px 0}
+.reel{width:110px;height:130px;border-radius:18px;background:#fff;color:#000;display:flex;align-items:center;justify-content:center;font-size:62px;box-shadow:inset 0 -12px 20px rgba(0,0,0,.2)}
+.reel.spin{animation:spin .12s linear infinite}
+@keyframes spin{0%{transform:translateY(-6px)}50%{transform:translateY(6px)}100%{transform:translateY(-6px)}}
+.result{font-size:24px;font-weight:800;text-align:center;min-height:34px;margin-top:10px}
+
+/* mdt */
+.mdt{display:flex;gap:16px;height:100%}
+.mdt .left{width:300px;flex-shrink:0;display:flex;flex-direction:column;gap:10px}
+.profile{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.badge{display:inline-block;padding:3px 9px;border-radius:8px;font-size:12px;font-weight:700}
+.ok{background:rgba(51,209,122,.18);color:var(--green)} .no{background:rgba(255,77,94,.18);color:var(--red)}
+.crime{padding:9px 0;border-bottom:1px solid var(--line);font-size:13px}
+.form{display:grid;grid-template-columns:90px 1fr;gap:8px;align-items:center}
+</style>
+</head>
+<body>
+<div id="cursor"><svg viewBox="0 0 24 24"><path d="M4 2l15 10.5-6.6 1.2 3.8 7.4-2.9 1.4-3.7-7.5L4 20z" fill="#fff" stroke="#000" stroke-width="1.2" stroke-linejoin="round"/></svg></div>
+
+<!-- HUD -->
+<div id="hud" class="hidden">
+  <div class="logo">RPG<span>.</span><i>RO</i></div>
+  <div class="clock" id="h-clock">--:--</div>
+  <div style="position:relative"><div class="cash" id="h-cash">$0</div></div>
+  <div class="bank">🏦 <span id="h-bank">$0</span></div>
+  <div class="row"><span class="pill" id="h-pp">💎 0</span><span class="pill hidden" id="h-vip" style="background:linear-gradient(90deg,#a66cff,#ff5fa2)">VIP</span></div>
+  <div class="row">
+    <div class="bars"><div class="bar hp"><div id="h-hp" style="width:100%"></div></div><div class="bar ar"><div id="h-ar" style="width:0%"></div></div></div>
+    <div class="lvl"><div class="c" id="h-lvlc"><div id="h-lvl">1</div></div></div>
+  </div>
+  <div class="stars" id="h-stars"></div>
+</div>
+
+<!-- VITEZOMETRU -->
+<div id="speedo" class="off hidden">
+  <svg viewBox="0 0 230 230">
+    <circle cx="115" cy="115" r="98" fill="rgba(10,12,18,.72)"/>
+    <path id="sp-bg" fill="none" stroke="rgba(255,255,255,.1)" stroke-width="12" stroke-linecap="round"/>
+    <path id="sp-arc" fill="none" stroke="url(#g1)" stroke-width="12" stroke-linecap="round"/>
+    <defs><linearGradient id="g1" x1="0" x2="1"><stop offset="0" stop-color="#33d17a"/><stop offset=".6" stop-color="#ffb020"/><stop offset="1" stop-color="#ff4d5e"/></linearGradient></defs>
+  </svg>
+  <div class="num"><b id="sp-v">0</b><small>KM/H</small><div class="vn" id="sp-name">-</div></div>
+  <div class="icons"><span id="sp-eng">⚙️</span><span id="sp-lights">💡</span><span id="sp-lock">🔒</span></div>
+  <div class="side">
+    <div><div class="l"><span>⛽ Benzina</span><span id="sp-fuelt">-</span></div><div class="bar fuel" id="sp-fuelb"><div id="sp-fuel" style="width:0"></div></div></div>
+    <div><div class="l"><span>🔧 Stare</span><span id="sp-hpt">100%</span></div><div class="bar vhp"><div id="sp-hp" style="width:100%"></div></div></div>
+    <div class="l"><span>🛣️ Kilometraj</span><span id="sp-km">-</span></div>
+  </div>
+</div>
+
+<div id="notes"></div>
+<div id="root"></div>
+<div id="drag" class="hidden"></div>
+
+<script>
+"use strict";
+const HAS_CEF = typeof cef !== "undefined";
+if(HAS_CEF) document.body.classList.add("cef"); else document.body.classList.add("preview");
+const $ = s=>document.querySelector(s);
+const root = $("#root");
+const fmt = n=>"$"+Number(n||0).toLocaleString("ro-RO");
+const esc = s=>String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function emit(ev, s){ if(HAS_CEF){ try{ cef.emit(ev, String(s)); }catch(e){} } else console.log("[emit]", ev, s); }
+function act(){ emit("ui:act", Array.from(arguments).join("|")); }
+function rows(s, sep){ return (s||"").split(sep||";").filter(x=>x.length).map(x=>x.split("~")); }
+
+/* ---------------- cursor ---------------- */
+const cur = $("#cursor");
+const mv = e=>{ cur.style.left=e.clientX+"px"; cur.style.top=e.clientY+"px"; };
+["mousemove","pointermove","mouseover","mousedown"].forEach(t=>window.addEventListener(t, mv, true));
+function setFocus(on){
+  document.body.classList.toggle("focus", on);
+  if(HAS_CEF){ try{ cef.set_focus(on); }catch(e){} }
+}
+
+/* ===================== HUD ===================== */
+let H = null;
+function hud(d){
+  const p = d.split("|");
+  if(p[0]==="0"){ $("#hud").classList.add("hidden"); return; }
+  $("#hud").classList.remove("hidden");
+  const n = {money:+p[1], bank:+p[2], hp:+p[3], ar:+p[4], lvl:+p[5], resp:+p[6], need:+p[7], wanted:+p[8], vip:+p[9], pp:+p[10], time:p[11]};
+  if(H && n.money !== H.money){
+    const d2 = n.money - H.money, el = document.createElement("div");
+    el.className = "delta"; el.style.top = "-6px"; el.style.color = d2>0 ? "#5bea8f" : "#ff6b78";
+    el.textContent = (d2>0?"+":"-")+fmt(Math.abs(d2)); $("#h-cash").parentNode.appendChild(el); setTimeout(()=>el.remove(), 2300);
+  }
+  if(H && n.wanted > H.wanted) notify("error","Wanted +"+(n.wanted-H.wanted),"Politia te cauta! Nivel wanted: "+n.wanted);
+  if(H && n.lvl > H.lvl) notify("success","Level UP!","Ai ajuns la level "+n.lvl+"!");
+  H = n;
+  $("#h-cash").textContent = fmt(n.money);
+  $("#h-bank").textContent = fmt(n.bank);
+  $("#h-pp").textContent = "💎 "+n.pp+" Emeralde";
+  $("#h-vip").classList.toggle("hidden", n.vip<=0);
+  $("#h-vip").textContent = ["","VIP BRONZE","VIP SILVER","VIP GOLD"][Math.min(n.vip,3)] || "VIP";
+  $("#h-hp").style.width = Math.max(0,Math.min(100,n.hp))+"%";
+  $("#h-ar").style.width = Math.max(0,Math.min(100,n.ar))+"%";
+  $("#h-ar").parentNode.style.opacity = n.ar>0 ? 1 : .35;
+  $("#h-lvl").textContent = n.lvl;
+  $("#h-lvlc").style.setProperty("--p", (n.need>0 ? Math.min(100, n.resp*100/n.need) : 0)+"%");
+  $("#h-lvlc").title = n.resp+"/"+n.need+" respect";
+  let s=""; for(let i=1;i<=6;i++) s += '<span class="'+(i<=n.wanted?"on":"off")+'">★</span>';
+  $("#h-stars").innerHTML = n.wanted>0 ? s : "";
+  $("#h-clock").textContent = n.time;
+}
+
+/* ===================== VITEZOMETRU ===================== */
+function arcPath(frac){
+  const cx=115, cy=115, r=98, a0=135*Math.PI/180, a1=a0+270*Math.PI/180*frac;
+  const x0=cx+r*Math.cos(a0), y0=cy+r*Math.sin(a0), x1=cx+r*Math.cos(a1), y1=cy+r*Math.sin(a1);
+  const large = (a1-a0) > Math.PI ? 1 : 0;
+  return frac<=0.001 ? "M"+x0+" "+y0 : "M"+x0+" "+y0+" A"+r+" "+r+" 0 "+large+" 1 "+x1+" "+y1;
+}
+$("#sp-bg").setAttribute("d", arcPath(1));
+function speedo(d){
+  const p = d.split("|"), sp = $("#speedo");
+  if(p[0]==="0"){ sp.classList.add("off"); return; }
+  sp.classList.remove("hidden","off");
+  const v=+p[1], fuel=+p[2], hp=+p[3];
+  $("#sp-v").textContent = v;
+  $("#sp-arc").setAttribute("d", arcPath(Math.min(v,260)/260));
+  $("#sp-name").textContent = p[7]||"";
+  if(fuel<0){ $("#sp-fuelt").textContent="-"; $("#sp-fuel").style.width="0"; $("#sp-fuelb").classList.remove("low"); }
+  else { $("#sp-fuelt").textContent=fuel+"%"; $("#sp-fuel").style.width=fuel+"%"; $("#sp-fuelb").classList.toggle("low", fuel<10); }
+  const hpp = Math.max(0, Math.round((hp-250)/7.5));
+  $("#sp-hpt").textContent = hpp+"%"; $("#sp-hp").style.width = hpp+"%";
+  $("#sp-lock").classList.toggle("on", p[4]==="1");
+  $("#sp-eng").classList.toggle("on", p[5]==="1");
+  $("#sp-lights").classList.toggle("on", p[6]==="1");
+  const km = +p[8];
+  $("#sp-km").textContent = km<0 ? "-" : (km/1000).toFixed(1)+" km";
+}
+
+/* ===================== NOTIFICARI ===================== */
+function notify(type, title, text){
+  const n = document.createElement("div");
+  n.className = "note "+(type||"info");
+  n.innerHTML = "<b>"+esc(title)+"</b><span>"+esc(text)+"</span>";
+  $("#notes").appendChild(n);
+  while($("#notes").children.length > 5) $("#notes").firstChild.remove();
+  setTimeout(()=>{ n.classList.add("out"); setTimeout(()=>n.remove(), 450); }, 6000);
+}
+
+/* ===================== FERESTRE ===================== */
+let MOD = null;            // modulul deschis
+function shell(icon, color, title, sub, body, foot, tabs){
+  return '<div id="ov"><div class="win"><div class="wh"><div class="ic" style="background:'+color+'">'+icon+'</div><div><h2>'+title+'</h2><p>'+(sub||"")+'</p></div>'+
+    '<button class="x" onclick="closeMod(true)">✕</button></div>'+(tabs||"")+'<div class="wb" id="wb">'+body+'</div>'+(foot?'<div class="wf">'+foot+'</div>':"")+'</div></div>';
+}
+function openMod(mod, data){
+  MOD = mod; setFocus(true);
+  const f = MODS[mod]; if(f) f(data||"");
+}
+function closeMod(notifyServer){
+  if(!MOD) return;
+  if(MOD==="login") return;   // login nu se inchide
+  const m = MOD; MOD = null;
+  root.innerHTML = "";
+  setFocus(false);
+  if(notifyServer) emit("ui:close", m);
+}
+function updMod(mod, data){ if(MOD===mod && UPD[mod]) UPD[mod](data); }
+window.addEventListener("keydown", e=>{
+  if(e.key==="Escape" || e.keyCode===27){
+    if(MOD==="death"){ deathMini(); return; }
+    closeMod(true);
+  }
+});
+// click pe fundalul intunecat = inchide
+document.addEventListener("mousedown", e=>{ if(e.target && e.target.id==="ov") closeMod(true); });
+
+const MODS = {}, UPD = {};
+
+/* ===================== LOGIN / REGISTER ===================== */
+const SK_M = [7,15,20,23,29,46,60,101], SK_F = [12,13,41,55,56,69,91,93];
+let regSkin = 7, regGender = 0;
+function skinImg(id){ return '<img src="https://assets.open.mp/assets/images/skins/'+id+'.png" onerror="this.remove()">'; }
+MODS.login = function(d){
+  const p = d.split("|");             // mod|nume|server|eroare
+  const mode = +p[0];
+  if(mode===0){ MOD=null; root.innerHTML=""; setFocus(false); return; }
+  const reg = mode===2;
+  let skins = "";
+  if(reg){
+    const list = regGender ? SK_F : SK_M;
+    if(!list.includes(regSkin)) regSkin = list[0];
+    skins = '<label>Alege-ti personajul</label><div class="gend"><button class="'+(regGender?"":"on")+'" onclick="regGender=0;MODS.login(LAST_LOGIN)">👨 Barbat</button><button class="'+(regGender?"on":"")+'" onclick="regGender=1;MODS.login(LAST_LOGIN)">👩 Femeie</button></div><div class="skins">'+
+      list.map(id=>'<div class="skin'+(id===regSkin?" on":"")+'" onclick="regSkin='+id+';MODS.login(LAST_LOGIN)">'+skinImg(id)+'#'+id+'</div>').join("")+'</div>';
+  }
+  root.innerHTML = '<div id="login"><div class="box"><div class="brand">RPG<span>.</span><i>RO</i></div>'+
+    '<div class="hi">'+(reg?"Bine ai venit, ":"Bine ai revenit, ")+'<b>'+esc(p[1])+'</b>!<br>'+(reg?"Contul tau nu exista. Alege o parola (6-24 caractere).":"Scrie parola ca sa intri in joc.")+'</div>'+
+    '<label>Parola</label><input id="lg-pass" type="password" maxlength="24" autocomplete="off">'+
+    (reg?'<label>Confirma parola</label><input id="lg-pass2" type="password" maxlength="24">':"")+skins+
+    '<div class="err" id="lg-err">'+esc(p[3]||"")+'</div>'+
+    '<button class="pri" onclick="doLogin('+mode+')">'+(reg?"Creeaza contul":"Intra in joc")+'</button>'+
+    '<div class="muted" style="text-align:center;font-size:12px;margin-top:14px">ENTER = '+(reg?"inregistrare":"logare")+'</div><div style="text-align:center;margin-top:8px"><a style="color:var(--sub);font-size:11px;text-decoration:underline;cursor:pointer" onclick="emit(\'ui:login\',\'#clasic#\')">Probleme? Foloseste fereastra clasica</a></div></div></div>';
+  const inp = $("#lg-pass"); setTimeout(()=>inp && inp.focus(), 50);
+  root.querySelectorAll("input").forEach(i=>i.addEventListener("keydown", e=>{ if(e.key==="Enter") doLogin(mode); }));
+};
+let LAST_LOGIN = "";
+function doLogin(mode){
+  const a = $("#lg-pass").value;
+  if(!a){ $("#lg-err").textContent = "Scrie parola."; return; }
+  if(mode===2){
+    if(a.length<6 || a.length>24){ $("#lg-err").textContent = "Parola trebuie sa aiba intre 6 si 24 de caractere."; return; }
+    if(a !== $("#lg-pass2").value){ $("#lg-err").textContent = "Parolele nu se potrivesc."; return; }
+    emit("ui:register", a.replace(/\|/g,"")+"|"+regSkin);
+  } else emit("ui:login", a);
+  $("#lg-err").textContent = "Se verifica...";
+}
+
+/* ===================== INVENTAR ===================== */
+const IT_E = {1:"💧",2:"🥪",3:"🩹",4:"🚬",5:"💐",6:"🧰",7:"🔫",8:"🥩",9:"🦊",10:"🐺",11:"💰",12:"🐟",13:"📦"};
+let INV = {sel:-1, slots:[]};
+MODS.inv = function(d){ renderInv(d); };
+UPD.inv = function(d){ renderInv(d); };
+function renderInv(d){
+  INV.last = d;
+  const [h, s] = d.split("#"), p = h.split("|");
+  const w = +p[0], max = +p[1];
+  INV.slots = rows(s);
+  if(INV.sel >= 0 && !INV.slots.find(x=>+x[0]===INV.sel)) INV.sel = -1;
+  let g = "";
+  const map = {}; INV.slots.forEach(x=>map[+x[0]]=x);
+  for(let i=0;i<20;i++){
+    const x = map[i];
+    if(!x) { g += '<div class="slot empty" data-s="'+i+'"></div>'; continue; }
+    g += '<div class="slot'+(INV.sel===i?" sel":"")+'" data-s="'+i+'" onmousedown="invDown(event,'+i+')"><span class="w">'+(x[5]/1000).toFixed(1)+'kg</span><span class="q">x'+esc(x[3])+'</span><div class="e">'+(IT_E[x[1]]||"❔")+'</div><div class="n">'+esc(x[4])+'</div></div>';
+  }
+  const sel = INV.sel>=0 ? map[INV.sel] : null;
+  const body = '<div style="display:flex;gap:10px;align-items:center;margin-bottom:14px"><b>Greutate</b><div class="wbar"><div style="width:'+Math.min(100,w*100/max)+'%;background-position:'+(-Math.min(100,w*100/max)*2)+'px 0"></div></div><b>'+(w/1000).toFixed(1)+' / '+(max/1000)+' kg</b></div>'+
+    '<div class="inv">'+g+'</div>'+
+    '<div class="zones" style="margin-top:14px"><div class="zone" data-z="use">🖐️ Foloseste / Scoate</div><div class="zone" data-z="give">🤝 Da cuiva</div><div class="zone" data-z="drop">🗑️ Arunca</div></div>'+
+    '<div class="muted" style="font-size:12px;margin-top:8px">Trage un obiect pe o actiune sau pe alt slot (ca sa le muti). Click = selectezi.</div>';
+  const foot = (sel ? '<b style="margin-right:auto">'+(IT_E[sel[1]]||"")+' '+esc(sel[4])+' x'+esc(sel[3])+'</b><button class="grn" onclick="act(\'inv\',\'use\','+INV.sel+')">Foloseste</button><button onclick="act(\'inv\',\'give\','+INV.sel+')">Da cuiva</button><button class="red" onclick="act(\'inv\',\'drop\','+INV.sel+')">Arunca</button>'
+    : '<span class="muted" style="margin-right:auto">Selecteaza un obiect.</span>')+
+    '<button onclick="act(\'inv\',\'store\')">➕ Pune in rucsac</button><button onclick="act(\'inv\',\'putweapon\')">🔫 Pune arma din mana</button>';
+  if(!$("#wb")) root.innerHTML = shell("🎒","#8b5e34","Rucsac","Maxim "+(max/1000)+" kg","","");
+  $("#wb").innerHTML = body;
+  const wf = $(".win .wf"); if(wf) wf.innerHTML = foot; else $(".win").insertAdjacentHTML("beforeend",'<div class="wf">'+foot+'</div>');
+}
+let DRAG = null;
+function invDown(e, s){
+  DRAG = {s, x:e.clientX, y:e.clientY, moved:false};
+}
+window.addEventListener("mousemove", e=>{
+  if(!DRAG) return;
+  if(!DRAG.moved && Math.hypot(e.clientX-DRAG.x, e.clientY-DRAG.y) > 6){
+    DRAG.moved = true;
+    const x = INV.slots.find(r=>+r[0]===DRAG.s);
+    $("#drag").textContent = x ? (IT_E[x[1]]||"❔") : ""; $("#drag").classList.remove("hidden");
+  }
+  if(DRAG.moved){
+    $("#drag").style.left=e.clientX+"px"; $("#drag").style.top=e.clientY+"px";
+    document.querySelectorAll(".slot,.zone").forEach(z=>z.classList.remove("over"));
+    const t = document.elementFromPoint(e.clientX, e.clientY);
+    const z = t && t.closest(".slot,.zone"); if(z) z.classList.add("over");
+  }
+});
+window.addEventListener("mouseup", e=>{
+  if(!DRAG) return;
+  const d = DRAG; DRAG = null; $("#drag").classList.add("hidden");
+  document.querySelectorAll(".slot,.zone").forEach(z=>z.classList.remove("over"));
+  if(!d.moved){ INV.sel = d.s; renderInv(INV.last); return; }
+  const t = document.elementFromPoint(e.clientX, e.clientY);
+  const z = t && t.closest(".zone"), sl = t && t.closest(".slot");
+  if(z) act("inv", z.dataset.z, d.s);
+  else if(sl && +sl.dataset.s !== d.s) act("inv","swap",d.s,sl.dataset.s);
+});
+
+/* ===================== MAGAZIN 24/7 ===================== */
+const SHOP_E = ["💧","🥪","🩹","📱","💐","🪂","🏏","🚬","🧰","🔦","🎁"];
+let CART = {};
+MODS.shop = function(d){
+  const [h, s] = d.split("#"), p = h.split("|");
+  const items = rows(s); CART = {};
+  const money = +p[1];
+  const draw = ()=>{
+    let g = items.map(x=>{
+      const i=+x[0], q=CART[i]||0;
+      return '<div class="card item"><div class="e">'+(SHOP_E[i]||"🛒")+'</div><div class="t"><b>'+esc(x[1])+'</b><span class="money">'+fmt(x[2])+'</span></div>'+
+        '<div class="qty"><button onclick="cartAdd('+i+',-1)">−</button><span>'+q+'</span><button onclick="cartAdd('+i+',1)">+</button></div></div>';
+    }).join("");
+    let tot = 0, lines = "";
+    items.forEach(x=>{ const q=CART[+x[0]]||0; if(q){ tot += q*x[2]; lines += '<div class="cline"><span>'+q+'x '+esc(x[1])+'</span><b>'+fmt(q*x[2])+'</b></div>'; }});
+    $("#wb").innerHTML = '<div style="display:flex;gap:16px"><div class="items" style="flex:1">'+g+'</div><div class="cart card"><b style="font-size:16px">🛒 Cos</b>'+(lines||'<span class="muted">Cosul e gol.</span>')+
+      '<div class="cline" style="border:none;font-size:15px"><b>Total</b><b class="money">'+fmt(tot)+'</b></div><div class="muted" style="font-size:12px">Bani la tine: '+fmt(money)+'</div>'+
+      '<button class="pri" '+(tot===0?"disabled":"")+' onclick="shopBuy()">Plateste '+fmt(tot)+'</button></div></div>';
+  };
+  window.cartAdd = (i,d)=>{ CART[i]=Math.max(0,Math.min(10,(CART[i]||0)+d)); draw(); };
+  window.shopBuy = ()=>{ const l=Object.keys(CART).filter(k=>CART[k]>0).map(k=>k+"x"+CART[k]).join(","); if(l) act("shop","buy",l); };
+  root.innerHTML = shell("🏪","#33d17a",esc(p[0]),"Magazin 24/7 - produsele din rucsac intra in /rucsac","","");
+  draw();
+};
+UPD.shop = function(d){ MODS.shop(d); };
+
+/* ===================== AMMU-NATION ===================== */
+const GUN_E = {22:"🔫",24:"🔫",25:"💥",29:"🔫",30:"🪖",31:"🪖",33:"🎯",0:"🦺"};
+MODS.ammu = function(d){
+  const [h, s] = d.split("#"), p = h.split("|"), lic = p[0]==="1";
+  const items = rows(s);
+  root.innerHTML = shell("🔫","#ff4d5e","Ammu-Nation","Arme legale - ai nevoie de permis de port-arma",
+    (lic?"":'<div class="card" style="border-color:var(--red);margin-bottom:14px">⚠️ Nu ai <b>permis de port-arma</b>. Poti cumpara doar vesta. Permisul il iei de la Primarie / DMV.</div>')+
+    '<div class="items">'+items.map(x=>{
+      const need = x[4]!=="0" && !lic;
+      return '<div class="card item"><div class="e">'+(GUN_E[x[4]]||"🔫")+'</div><div class="t"><b>'+esc(x[1])+'</b><span class="money">'+fmt(x[2])+'</span><div class="muted" style="font-size:11px">'+esc(x[3])+'</div></div>'+
+        '<button class="'+(need?"":"pri")+'" '+(need?"disabled":"")+' onclick="act(\'ammu\',\'buy\','+x[0]+')">Cumpara</button></div>';
+    }).join("")+'</div>', '<span class="muted">Bani la tine: <b class="money">'+fmt(p[1])+'</b></span>');
+};
+UPD.ammu = function(d){ MODS.ammu(d); };
+
+/* ===================== DEALER ===================== */
+let DS = {cat:0, cur:0, cars:[], cats:[], money:0, slots:"", auto:true};
+function vehImg(m){ return '<img src="https://assets.open.mp/assets/images/vehiclePictures/Vehicle_'+m+'.jpg" onerror="this.style.visibility=\'hidden\'">'; }
+MODS.dealer = function(d){
+  const parts = d.split("#"), p = parts[0].split("|");
+  DS.money=+p[0]; DS.slots=p[1]+" / "+p[2]; DS.cur=+p[3];
+  DS.cats = parts[1].split(";"); DS.cars = rows(parts[2]);
+  const c = DS.cars.find(x=>+x[0]===DS.cur); DS.cat = c ? +c[4] : 0;
+  drawDealer();
+};
+UPD.dealer = function(d){ const p=d.split("|"); DS.cur=+p[0]; if(p[1]!==undefined) DS.money=+p[1]; drawDealer(); };
+function drawDealer(){
+  const c = DS.cars.find(x=>+x[0]===DS.cur) || DS.cars[0];
+  root.innerHTML = '<div id="dealer"><div class="wh"><div class="ic" style="background:#3d8bff">🚗</div><div><h2>Dealership Grotti</h2><p>Sloturi: '+DS.slots+' · Bani: <span class="money">'+fmt(DS.money)+'</span></p></div><button class="x" onclick="act(\'dealer\',\'exit\')">✕</button></div>'+
+    '<div class="cats">'+DS.cats.map((n,i)=>'<div class="'+(i===DS.cat?"on":"")+'" onclick="DS.cat='+i+';drawDealer()">'+esc(n)+'</div>').join("")+'</div>'+
+    '<div class="cars">'+DS.cars.filter(x=>+x[4]===DS.cat).map(x=>'<div class="car'+(+x[0]===DS.cur?" on":"")+'" onclick="act(\'dealer\',\'show\','+x[0]+')">'+vehImg(x[1])+'<div class="t"><b>'+esc(x[2])+'</b><span class="money">'+fmt(x[3])+'</span></div></div>').join("")+'</div>'+
+    (c?'<div class="dsel"><h3>'+esc(c[2])+'</h3><div class="p">'+fmt(c[3])+'</div>'+
+    '<div class="rot"><button onclick="act(\'dealer\',\'rot\',-30)">⟲ Roteste</button><button onclick="DS.auto=!DS.auto;act(\'dealer\',\'auto\',DS.auto?1:0);drawDealer()">'+(DS.auto?"⏸ Opreste":"▶ Auto")+'</button><button onclick="act(\'dealer\',\'rot\',30)">Roteste ⟳</button></div>'+
+    '<div class="rot"><button onclick="act(\'dealer\',\'color\')">🎨 Alta culoare</button></div>'+
+    '<button class="pri" style="width:100%;padding:13px" '+(DS.money<+c[3]?"disabled":"")+' onclick="act(\'dealer\',\'buy\','+c[0]+')">'+(DS.money<+c[3]?"Nu ai destui bani":"Cumpara cu "+fmt(c[3]))+'</button></div>':"")+'</div>';
+}
+
+/* ===================== BANCA / ATM ===================== */
+let BK = {hist:[]};
+MODS.bank = function(d){ BK.tab = 0; drawBank(d); };
+UPD.bank = function(d){ drawBank(d); };
+function drawBank(d){
+  const p = d.split("|"); BK.d = d;
+  const atm = p[0]==="1", money=+p[1], bank=+p[2], loan=+p[3], rate=+p[4], missed=+p[5], maxl=+p[6], frozen=p[7]==="1";
+  const tabs = atm ? "" : '<div class="tabs">'+["Cont","Transfer","Credit"].map((t,i)=>'<div class="'+(BK.tab===i?"on":"")+'" onclick="BK.tab='+i+';drawBank(BK.d)">'+t+'</div>').join("")+'</div>';
+  const quick = '<div class="amts">'+[100,500,1000,5000,10000,50000].map(v=>'<button onclick="$(\'#bk-a\').value='+v+'">'+fmt(v)+'</button>').join("")+'<button onclick="$(\'#bk-a\').value='+money+'">Tot (la tine)</button></div>';
+  let body = '<div style="display:grid;grid-template-columns:1.1fr 1fr;gap:16px"><div><div class="bankcard"><div style="display:flex;justify-content:space-between"><b>Banca Los Santos</b><b>'+(atm?"ATM":"VISA")+'</b></div><div class="chip"></div><div class="muted" style="color:#cfe">Sold disponibil</div><div class="bal">'+fmt(bank)+'</div><div style="margin-top:10px;letter-spacing:2px">•••• '+String(1000+(p[9]*37)%9000)+'  ·  '+esc(p[8])+'</div></div>'+
+    '<div class="grid" style="grid-template-columns:1fr 1fr;margin-top:12px"><div class="stat"><small>Bani la tine</small><b class="money">'+fmt(money)+'</b></div><div class="stat"><small>Credit de platit</small><b class="'+(loan>0?"red":"")+'">'+fmt(loan)+'</b></div></div>'+
+    (frozen?'<div class="card" style="margin-top:12px;border-color:var(--red)">⛔ Cont blocat: 3 rate de credit ratate. Plateste creditul.</div>':"")+'</div><div>';
+  if(atm || BK.tab===0){
+    body += '<b>Suma</b><input id="bk-a" type="number" min="1" placeholder="ex: 1000" style="margin-top:8px">'+quick+
+      '<div style="display:flex;gap:10px;margin-top:6px"><button class="grn" style="flex:1" onclick="bkDo(\'dep\')">⬇ Depune</button><button class="pri" style="flex:1" '+(frozen?"disabled":"")+' onclick="bkDo(\'wit\')">⬆ Retrage</button></div>'+
+      (atm?'<div class="muted" style="font-size:12px;margin-top:8px">La ATM se percepe un comision de 2% (minim $5).</div>':"");
+  } else if(BK.tab===1){
+    body += '<b>Catre (ID sau nume)</b><input id="bk-t" placeholder="ex: 12 sau Ion_Popescu" style="margin:8px 0 10px"><b>Suma</b><input id="bk-a" type="number" min="1" style="margin-top:8px">'+quick+
+      '<button class="pri" style="width:100%;margin-top:6px" onclick="bkDo(\'tr\')">Trimite banii</button><div class="muted" style="font-size:12px;margin-top:8px">Transferurile cer level 3. Maxim $1.000.000.</div>';
+  } else {
+    body += loan>0 ? '<div class="stat" style="margin-bottom:10px"><small>Rata pe PayDay</small><b>'+fmt(rate)+'</b><div class="muted" style="font-size:12px">Rate ratate: '+missed+' / 3</div></div><b>Plateste acum</b><input id="bk-a" type="number" min="1" style="margin-top:8px">'+quick+'<button class="pri" style="width:100%" onclick="bkDo(\'pay\')">Plateste din banii de la tine</button>'
+      : '<b>Cere un credit</b><div class="muted" style="font-size:12px;margin:6px 0 8px">Intre $1.000 si '+fmt(maxl)+' (level x $10.000). Returnezi +15% in 10 PayDay-uri.</div><input id="bk-a" type="number" min="1000" max="'+maxl+'">'+
+        '<div class="amts">'+[5000,10000,25000,50000].filter(v=>v<=maxl).map(v=>'<button onclick="$(\'#bk-a\').value='+v+'">'+fmt(v)+'</button>').join("")+'</div><button class="pri" style="width:100%" onclick="bkDo(\'loan\')">Cere creditul</button>';
+  }
+  body += '<div style="margin-top:16px"><b>Istoric (sesiunea asta)</b><div class="hist">'+(BK.hist.length?BK.hist.slice(-6).reverse().map(h=>'<div><span>'+h[0]+'</span><b class="'+(h[2]?"money":"red")+'">'+h[1]+'</b></div>').join(""):'<div class="muted">Nicio operatiune.</div>')+'</div></div></div></div>';
+  root.innerHTML = shell(atm?"🏧":"🏦","#3d8bff",atm?"ATM":"Banca Los Santos",atm?"Retrageri si depuneri rapide":"Cont, transferuri si credite",body,"",tabs);
+}
+function bkDo(a){
+  const v = parseInt(($("#bk-a")||{}).value,10);
+  if(!(v>0)){ notify("error","Banca","Scrie o suma valida."); return; }
+  const names = {dep:["Depunere",1],wit:["Retragere",0],tr:["Transfer",0],pay:["Plata credit",0],loan:["Credit",1]};
+  BK.hist.push([names[a][0], (names[a][1]?"+":"-")+fmt(v), names[a][1]]);
+  if(a==="tr") act("bank","tr",($("#bk-t").value||"").replace(/[|]/g,""),v); else act("bank",a,v);
+}
+
+/* ===================== BATTLE PASS ===================== */
+const BP_E = ["💵","💎","🎁","🚀","👑","🚗","👕"];
+MODS.bp = function(d){ drawBP(d); };
+UPD.bp = function(d){ drawBP(d); };
+function drawBP(d){
+  const [h, s] = d.split("#"), p = h.split("|");
+  const season=p[0], days=p[1], lvl=+p[2], xp=+p[3], need=+p[4], prem=p[5]==="1", pp=+p[6], cf=+p[7], cp=+p[8], tierPrice=p[9], premPrice=p[10];
+  const tiers = rows(s);
+  const cell = (t, type, name, premium)=>{
+    const bit = 1<<(t-1), done = premium ? (cp & bit) : (cf & bit), unl = lvl >= t, can = unl && !done && (!premium || prem);
+    const cls = "rw"+(premium?" prem":"")+(!unl||(premium&&!prem)?" lock":"")+(done?" done":"")+(can?" can":"");
+    return '<div class="'+cls+'" onclick="'+(can?"act('bp','claim',"+t+","+(premium?1:0)+")":"")+'"><div class="e">'+(BP_E[type]||"🎁")+'</div>'+esc(name)+(premium&&!prem?'<div class="muted" style="font-size:10px">🔒 premium</div>':"")+'</div>';
+  };
+  const body = '<div class="bphead"><div class="stat"><small>Tier</small><b>'+lvl+' / 30</b></div><div style="flex:1"><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px"><span>XP spre tier-ul urmator</span><span>'+(lvl>=30?"MAX":xp+" / "+need)+'</span></div><div class="xpbar"><div style="width:'+(lvl>=30?100:xp*100/need)+'%"></div></div></div>'+
+    '<div class="stat"><small>Emeralde</small><b>💎 '+pp+'</b></div></div>'+
+    '<div style="display:flex;gap:10px;margin:14px 0"><div style="width:90px;display:flex;flex-direction:column;gap:8px;padding-top:36px"><div style="height:118px;display:flex;align-items:center;font-weight:700">GRATUIT</div><div style="height:118px;display:flex;align-items:center;font-weight:700;color:var(--pink)">PREMIUM</div></div>'+
+    '<div class="tiers" id="bp-t" style="flex:1">'+tiers.map(x=>{ const t=+x[0];
+      return '<div class="tier'+(lvl>=t?" unl":"")+'"><div class="h">TIER '+t+'</div>'+cell(t,+x[1],x[2],false)+cell(t,+x[3],x[4],true)+'</div>'; }).join("")+'</div></div>';
+  const foot = '<span class="muted" style="margin-right:auto">Sezonul '+season+' · mai sunt '+days+' zile · premiile verzi se pot lua (click)</span>'+
+    '<button onclick="act(\'bp\',\'missions\')">📋 Misiuni</button><button '+(lvl>=30?"disabled":"")+' onclick="act(\'bp\',\'tier\')">+1 Tier (💎 '+tierPrice+')</button>'+
+    (prem?'<span class="badge ok">PREMIUM activ</span>':'<button class="pri" onclick="act(\'bp\',\'premium\')">Activeaza PREMIUM (💎 '+premPrice+')</button>');
+  const sx = $("#bp-t") ? $("#bp-t").scrollLeft : null;
+  root.innerHTML = shell("🏆","linear-gradient(135deg,#ffb020,#ff5fa2)","Battle Pass","Sezonul "+season, body, foot);
+  const tl = $("#bp-t");
+  if(sx!==null) tl.scrollLeft = sx; else tl.scrollLeft = Math.max(0,(Math.min(lvl,30)-3)*130);
+  tl.addEventListener("wheel", e=>{ tl.scrollLeft += e.deltaY; e.preventDefault(); });
+}
+
+/* ===================== FACTIUNE ===================== */
+let FC = {};
+MODS.fac = function(d){ FC.tab = 0; FC.sel = -1; drawFac(d); };
+UPD.fac = function(d){ drawFac(d); };
+function drawFac(d){
+  FC.d = d;
+  const parts = d.split("#"), p = parts[0].split("|");
+  const color = "#"+(p[3]||"ffffff"), leader = p[7]==="1";
+  const ranks = rows(parts[1]), mem = rows(parts[2]);
+  FC.ranks = ranks;
+  const tabs = '<div class="tabs">'+["Membri online","Rank-uri si salarii","Buget"].map((t,i)=>'<div class="'+(FC.tab===i?"on":"")+'" onclick="FC.tab='+i+';drawFac(FC.d)">'+t+'</div>').join("")+'</div>';
+  let body = "";
+  if(FC.tab===0){
+    body = '<table><thead><tr><th>ID</th><th>Nume</th><th>Rank</th><th>Tura</th></tr></thead><tbody>'+mem.map(m=>'<tr class="'+(FC.sel===+m[0]?"sel":"")+'" onclick="FC.sel='+m[0]+';drawFac(FC.d)"><td>'+m[0]+'</td><td><b>'+esc(m[1])+'</b></td><td>'+m[2]+'. '+esc((ranks[m[2]-1]||[])[0]||"")+'</td><td>'+(m[3]==="1"?'<span class="badge ok">in tura</span>':'<span class="muted">-</span>')+'</td></tr>').join("")+'</tbody></table>'+
+      (mem.length?"":'<div class="muted">Niciun membru online.</div>');
+    if(leader) body += '<div class="card" style="margin-top:14px"><b>Invita un jucator</b><div style="display:flex;gap:8px;margin-top:8px"><input id="fc-inv" placeholder="ID sau nume (minim level 3)"><button class="pri" onclick="act(\'fac\',\'invite\',$(\'#fc-inv\').value)">Invita</button></div></div>';
+  } else if(FC.tab===1){
+    body = '<table><thead><tr><th>Rank</th><th>Nume</th><th>Salariu / PayDay</th>'+(leader?'<th></th>':'')+'</tr></thead><tbody>'+ranks.map((r,i)=>'<tr><td>'+(i+1)+'</td><td><b>'+esc(r[0])+'</b></td><td>'+(leader?'<input id="fs-'+(i+1)+'" type="number" value="'+r[1]+'" style="width:130px;padding:6px 10px">':'<span class="money">'+fmt(r[1])+'</span>')+'</td>'+(leader?'<td><button onclick="act(\'fac\',\'salary\','+(i+1)+',$(\'#fs-'+(i+1)+'\').value)">Salveaza</button></td>':'')+'</tr>').join("")+'</tbody></table>';
+  } else {
+    body = '<div class="grid" style="grid-template-columns:repeat(3,1fr)"><div class="stat"><small>Buget</small><b class="money">'+fmt(p[4])+'</b></div><div class="stat"><small>Lider</small><b>'+esc(p[5])+'</b></div><div class="stat"><small>Rank-ul tau</small><b>'+p[6]+'. '+esc((ranks[p[6]-1]||[])[0]||"")+'</b></div></div>'+
+      (p[8]==="1"?'<div class="card" style="margin-top:12px;border-color:var(--red)">⚠️ Factiunea e pe DEFICIT - salariile nu se platesc complet.</div>':"")+
+      '<div class="card" style="margin-top:14px"><b>Depune bani in bugetul factiunii</b><div style="display:flex;gap:8px;margin-top:8px"><input id="fc-dep" type="number" placeholder="suma"><button class="grn" onclick="act(\'fac\',\'deposit\',$(\'#fc-dep\').value)">Depune</button></div></div>';
+  }
+  let foot = '<span class="muted" style="margin-right:auto">'+mem.length+' membri online</span>';
+  if(leader && FC.sel>=0 && FC.tab===0){
+    const m = mem.find(x=>+x[0]===FC.sel);
+    if(m) foot = '<b style="margin-right:auto">'+esc(m[1])+'</b><select id="fc-rk" style="width:180px">'+ranks.slice(0,6).map((r,i)=>'<option value="'+(i+1)+'"'+(+m[2]===i+1?" selected":"")+'>'+(i+1)+'. '+esc(r[0])+'</option>').join("")+'</select><button onclick="act(\'fac\',\'rank\','+m[0]+',$(\'#fc-rk\').value)">Schimba rank</button><button class="red" onclick="facKick('+m[0]+')">Da afara</button>';
+  }
+  root.innerHTML = shell("🛡️",color,esc(p[1]),esc(p[2])+(leader?" · esti LIDER":""),body,foot,tabs);
+}
+function facKick(id){ act("fac","kick",id,"Dat afara de lider"); }
+
+/* ===================== MDT POLITIE ===================== */
+let MDT = {};
+MODS.mdt = function(d){
+  const parts = d.split("#"), p = parts[0].split("|");
+  MDT.wanted = rows(parts[1]); MDT.cop = p;
+  root.innerHTML = shell("🚓","#2641fe","MDT - Los Santos Police","Ofiter "+esc(p[0])+" · "+esc(p[1]),
+    '<div class="mdt"><div class="left"><div style="display:flex;gap:8px"><input id="md-q" placeholder="ID sau nume"><button class="pri" onclick="act(\'mdt\',\'search\',$(\'#md-q\').value)">🔎</button></div>'+
+    '<b style="margin-top:6px">🚨 Cautati acum ('+MDT.wanted.length+')</b><div style="overflow:auto;flex:1">'+(MDT.wanted.length?MDT.wanted.map(w=>'<div class="card" style="margin-bottom:8px;cursor:pointer;padding:10px" onclick="act(\'mdt\',\'search\','+w[0]+')"><b>'+esc(w[1])+'</b> <span class="muted">('+w[0]+')</span><div><span style="color:#ffd23d">'+"★".repeat(+w[2])+'</span> <span class="muted" style="font-size:12px">'+esc(w[3])+'</span></div></div>').join(""):'<div class="muted">Nimeni nu e cautat.</div>')+'</div></div>'+
+    '<div style="flex:1" id="md-p"><div class="muted" style="margin-top:40px;text-align:center;font-size:15px">Cauta un cetatean dupa ID sau nume.</div></div></div>',"");
+  $("#md-q").addEventListener("keydown", e=>{ if(e.key==="Enter") act("mdt","search",$("#md-q").value); });
+};
+UPD.mdt = function(d){
+  if(d==="0"){ $("#md-p").innerHTML = '<div class="card" style="border-color:var(--red)">Nu am gasit niciun jucator online cu acest ID / nume.</div>'; return; }
+  const parts = d.split("#"), p = parts[0].split("|");
+  const veh = rows(parts[1]), cr = rows(parts[2]), id = p[0];
+  const yn = v=>v==="1"?'<span class="badge ok">DA</span>':'<span class="badge no">NU</span>';
+  $("#md-p").innerHTML = '<div style="display:flex;align-items:center;gap:14px;margin-bottom:12px"><div style="width:64px;height:64px;border-radius:16px;background:var(--bg2);display:flex;align-items:center;justify-content:center;font-size:32px">👤</div><div><h2>'+esc(p[1])+' <span class="muted" style="font-size:14px">ID '+id+'</span></h2><span style="color:#ffd23d;font-size:18px">'+("★".repeat(+p[3])||'<span class="badge ok">fara wanted</span>')+'</span></div></div>'+
+    '<div class="profile"><div class="stat"><small>Level</small><b>'+p[2]+'</b></div><div class="stat"><small>Telefon</small><b>'+esc(p[8])+'</b></div><div class="stat"><small>Factiune</small><b>'+esc(p[7])+'</b></div><div class="stat"><small>Ultima infractiune</small><b style="font-size:14px">'+esc(p[4])+'</b></div>'+
+    '<div class="stat"><small>Permis auto</small>'+yn(p[5])+'</div><div class="stat"><small>Port-arma</small>'+yn(p[6])+'</div></div>'+
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px"><div class="card"><b>🚗 Vehicule</b>'+(veh.length?veh.map(v=>'<div class="crime">'+esc(v[0])+' <span class="muted">· '+esc(v[1])+'</span></div>').join(""):'<div class="muted">Niciun vehicul.</div>')+'</div>'+
+    '<div class="card"><b>📁 Cazier</b>'+(cr.length?cr.map(c=>'<div class="crime">'+esc(c[0])+' <span class="red">+'+c[1]+'</span><div class="muted" style="font-size:11px">acum '+c[2]+' zile · '+esc(c[3])+'</div></div>').join(""):'<div class="muted">Cazier curat.</div>')+'</div></div>'+
+    '<div class="card" style="margin-top:12px"><b>Actiuni</b><div class="form" style="margin-top:10px"><span>Wanted</span><div style="display:flex;gap:8px"><select id="md-st" style="width:90px">'+[1,2,3,4,5,6].map(i=>'<option>'+i+'</option>').join("")+'</select><input id="md-cr" placeholder="infractiunea"><button class="red" onclick="act(\'mdt\',\'su\','+id+',$(\'#md-st\').value,$(\'#md-cr\').value)">Adauga</button></div>'+
+    '<span>Amenda</span><div style="display:flex;gap:8px"><input id="md-am" type="number" placeholder="suma" style="width:120px"><input id="md-mo" placeholder="motivul"><button class="pri" onclick="act(\'mdt\',\'ticket\','+id+',$(\'#md-am\').value,$(\'#md-mo\').value)">Amendeaza</button></div></div></div>';
+};
+
+/* ===================== SCOREBOARD ===================== */
+let SB = {list:[], q:""};
+MODS.sb = function(d){
+  const p = d.split("|"); SB.list = []; SB.h = p;
+  root.innerHTML = shell("👥","#a66cff","Jucatori online",'<span id="sb-n">'+p[0]+'</span> / '+p[1]+' · '+esc(p[2]),
+    '<input id="sb-q" placeholder="Cauta dupa nume sau ID..." style="margin-bottom:12px"><table><thead><tr><th>ID</th><th>Nume</th><th>Level</th><th>Factiune</th><th>Ping</th></tr></thead><tbody id="sb-b"></tbody></table>',"");
+  $("#sb-q").addEventListener("input", e=>{ SB.q = e.target.value.toLowerCase(); drawSB(); });
+};
+UPD.sb = function(d){ SB.list = SB.list.concat(rows(d)); drawSB(); };
+function drawSB(){
+  const b = $("#sb-b"); if(!b) return;
+  b.innerHTML = SB.list.filter(x=>!SB.q || x[1].toLowerCase().includes(SB.q) || x[0]===SB.q).map(x=>'<tr><td>'+x[0]+'</td><td><b>'+esc(x[1])+'</b></td><td>'+x[2]+'</td><td><span class="dot" style="background:#'+x[4]+'"></span>'+esc(x[3])+'</td><td style="color:'+(+x[5]<80?"var(--green)":+x[5]<160?"var(--accent)":"var(--red)")+'">'+x[5]+'</td></tr>').join("");
+}
+
+/* ===================== ADMIN ===================== */
+let AD = {list:[], rep:[], sel:-1, q:"", tab:0};
+MODS.admin = function(d){
+  const parts = d.split("#"); AD.lvl = +parts[0]; AD.rep = rows(parts[1]); AD.list = []; AD.sel = -1;
+  drawAdmin();
+};
+UPD.admin = function(d){
+  if(d.startsWith("R#")){ AD.rep = rows(d.slice(2)); }
+  else AD.list = AD.list.concat(rows(d));
+  drawAdmin();
+};
+function drawAdmin(){
+  const q = $("#ad-q") ? $("#ad-q").value : AD.q; AD.q = q;
+  const tabs = '<div class="tabs">'+["Jucatori ("+AD.list.length+")","Rapoarte ("+AD.rep.length+")"].map((t,i)=>'<div class="'+(AD.tab===i?"on":"")+'" onclick="AD.tab='+i+';drawAdmin()">'+t+'</div>').join("")+'</div>';
+  let body, foot = "";
+  if(AD.tab===0){
+    body = '<input id="ad-q" placeholder="Cauta jucator..." value="'+esc(q)+'" style="margin-bottom:12px"><table><thead><tr><th>ID</th><th>Nume</th><th>Level</th><th>Bani</th><th>Ping</th></tr></thead><tbody>'+
+      AD.list.filter(x=>!q || x[1].toLowerCase().includes(q.toLowerCase()) || x[0]===q).map(x=>'<tr class="'+(AD.sel===+x[0]?"sel":"")+'" onclick="AD.sel='+x[0]+';drawAdmin()"><td>'+x[0]+'</td><td><b>'+esc(x[1])+'</b></td><td>'+x[2]+'</td><td class="money">'+fmt(x[3])+'</td><td>'+x[4]+'</td></tr>').join("")+'</tbody></table>';
+    const s = AD.list.find(x=>+x[0]===AD.sel);
+    if(s){
+      const b = (c,t,cls)=>'<button class="'+(cls||"")+'" onclick="adm(\''+c+'\')">'+t+'</button>';
+      foot = '<b style="margin-right:6px">'+esc(s[1])+'</b>'+b("goto","📍 Goto")+b("gethere","🧲 Aduce")+b("spec","👁️ Spec")+b("slap","👋 Slap")+b("freeze","🧊 Freeze")+b("unfreeze","🔥 Unfreeze")+b("heal","❤️ Heal")+
+        '<input id="ad-r" placeholder="motiv" style="width:150px">'+b("kick","Kick","red")+(AD.lvl>=2?b("ban","Ban","red"):"");
+    } else foot = '<span class="muted">Selecteaza un jucator. Admin level '+AD.lvl+'. /specoff = iesi din spectate.</span>';
+  } else {
+    body = AD.rep.length ? AD.rep.map(r=>'<div class="card" style="margin-bottom:8px;display:flex;gap:12px;align-items:center"><div style="flex:1"><b>'+esc(r[1])+'</b> <span class="muted">(id '+r[0]+')</span><div>'+esc(r[2])+'</div>'+(r[3]!=="-"?'<div class="muted" style="font-size:12px">preluat de '+esc(r[3])+'</div>':"")+'</div><button class="pri" onclick="act(\'admin\',\'ar\','+r[0]+')">Preia</button><button onclick="act(\'admin\',\'cr\','+r[0]+')">Inchide</button><button onclick="act(\'admin\',\'goto\','+r[0]+')">Goto</button></div>').join("") : '<div class="muted">Niciun raport activ. 🎉</div>';
+  }
+  root.innerHTML = shell("🛠️","#ff4d5e","Panou admin","Level "+AD.lvl, body, foot, tabs);
+  const qi = $("#ad-q"); if(qi){ qi.addEventListener("input", ()=>drawAdmin()); qi.focus(); qi.setSelectionRange(qi.value.length, qi.value.length); }
+}
+function adm(c){ const r = ($("#ad-r")||{}).value || "Fara motiv"; act("admin", c, AD.sel, r.replace(/[|]/g,"")); }
+
+/* ===================== MOARTE ===================== */
+let DT = {t:0, timer:null};
+MODS.death = function(d){
+  const p = d.split("|"), downed = p[0]==="1";
+  DT.t = +p[3];
+  root.innerHTML = '<div id="death"><h1>'+(downed?"INCONSTIENT":"AI MURIT")+'</h1>'+
+    '<div class="k">'+(p[1]?'Ucis de <b>'+esc(p[1])+'</b>'+(p[2]?' cu <b>'+esc(p[2])+'</b>':""):(p[2]?esc(p[2]):""))+'</div>'+
+    '<div class="t" id="dt-t">'+DT.t+'</div><div class="muted show">sec</div><div class="muted">'+(downed?"secunde pana ajungi la spital · medici in tura: "+p[4]:"Te trezesti la spital...")+'</div>'+
+    (downed?'<div class="btns"><button class="pri" onclick="act(\'death\',\'medic\')">🚑 Cheama SMURD</button><button class="red" onclick="act(\'death\',\'giveup\')">🏥 Mergi la spital</button><button onclick="deathMini()">Ascunde (chat)</button></div>':"")+'</div>';
+  clearInterval(DT.timer);
+  DT.timer = setInterval(()=>{ if(DT.t>0) DT.t--; const e=$("#dt-t"); if(e) e.textContent = DT.t; }, 1000);
+  if(!downed) setFocus(false);
+};
+function deathMini(){ const d=$("#death"); if(d){ d.classList.add("mini"); } MOD=null; setFocus(false); emit("ui:close","deathmini"); }
+UPD.death = function(){};
+
+/* ===================== CAZINO ===================== */
+const WHEEL = [0,32,15,19,4,21,2,25,17,34,6,27,13,36,11,30,8,23,10,5,24,16,33,1,20,14,31,9,22,18,29,7,28,12,35,3,26];
+const RED = [1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36];
+const SLOT_E = ["🍒","🍇","🟩","🔔","💎","7️⃣"];
+let CS = {tab:0, bet:100, choice:"rosu", rot:0, busy:false};
+function numColor(n){ return n===0?"#0b8a2e":RED.includes(n)?"#c0141c":"#111"; }
+MODS.casino = function(d){ const p=d.split("|"); CS.money=+p[0]; CS.tab=+(p[1]||0); drawCasino(); };
+function drawCasino(){
+  const tabs = '<div class="tabs">'+["🎡 Ruleta","🎰 Pacanele"].map((t,i)=>'<div class="'+(CS.tab===i?"on":"")+'" onclick="if(!CS.busy){CS.tab='+i+';drawCasino()}">'+t+'</div>').join("")+'</div>';
+  const betRow = '<div style="display:flex;gap:8px;align-items:center;margin-top:14px"><b>Miza</b><input id="cs-bet" type="number" min="10" max="5000" value="'+CS.bet+'" style="width:120px" oninput="CS.bet=+this.value">'+
+    [50,100,500,1000,5000].map(v=>'<button onclick="CS.bet='+v+';$(\'#cs-bet\').value='+v+'">'+fmt(v)+'</button>').join("")+'</div>';
+  let body;
+  if(CS.tab===0){
+    const seg = 360/37;
+    const grad = WHEEL.map((n,i)=>numColor(n)+" "+(i*seg)+"deg "+((i+1)*seg)+"deg").join(",");
+    const labels = WHEEL.map((n,i)=>'<div style="position:absolute;left:50%;top:0;height:50%;transform-origin:bottom center;transform:translateX(-50%) rotate('+(i*seg+seg/2)+'deg);font-size:11px;font-weight:800;color:#fff;padding-top:6px">'+n+'</div>').join("");
+    const opts = [["rosu","🔴 Rosu x2"],["negru","⚫ Negru x2"],["par","Par x2"],["impar","Impar x2"]];
+    body = '<div style="display:flex;gap:26px;align-items:center"><div class="wheel"><div class="ptr"></div><div class="in" id="cs-w" style="background:conic-gradient('+grad+');transform:rotate('+CS.rot+'deg)">'+labels+'</div><div class="hub" id="cs-n">?</div></div>'+
+      '<div style="flex:1"><b>Pariul tau</b><div class="bets" style="margin-top:8px">'+opts.map(o=>'<button class="'+(CS.choice===o[0]?"on":"")+'" onclick="CS.choice=\''+o[0]+'\';drawCasino()">'+o[1]+'</button>').join("")+'</div>'+
+      '<div class="nums">'+Array.from({length:37},(_, n)=>'<div class="'+(CS.choice===String(n)?"on":"")+'" style="background:'+numColor(n)+'" onclick="CS.choice=\''+n+'\';drawCasino()">'+n+'</div>').join("")+'</div><div class="muted" style="font-size:12px;margin-top:6px">Numar exact = x36</div>'+betRow+
+      '<button class="pri" style="width:100%;margin-top:14px;padding:13px" id="cs-go" onclick="csSpin()">Invarte ruleta</button><div class="result" id="cs-r"></div></div></div>';
+  } else {
+    body = '<div class="reels">'+[0,1,2].map(i=>'<div class="reel" id="rl'+i+'">'+SLOT_E[5]+'</div>').join("")+'</div><div class="muted" style="text-align:center">3x 7️⃣ = x30 · 3 la fel = x10 · 2 la fel = x1.4</div>'+betRow+
+      '<button class="pri" style="width:100%;margin-top:14px;padding:13px" id="cs-go" onclick="csSlot()">Trage maneta</button><div class="result" id="cs-r"></div>';
+  }
+  root.innerHTML = shell("🎲","#0b8a2e","Cazinoul Four Dragons",'Bani la tine: <span class="money" id="cs-m">'+fmt(CS.money)+'</span> · miza $10 - $5.000',body,"",tabs);
+}
+function csSpin(){ if(CS.busy) return; CS.busy=true; $("#cs-go").disabled=true; $("#cs-r").textContent=""; act("casino","roul",CS.choice,CS.bet); }
+function csSlot(){ if(CS.busy) return; CS.busy=true; $("#cs-go").disabled=true; $("#cs-r").textContent="";
+  [0,1,2].forEach(i=>{ const r=$("#rl"+i); r.classList.add("spin"); r._t=setInterval(()=>r.textContent=SLOT_E[Math.floor(Math.random()*6)],90); });
+  act("casino","slot",CS.bet); }
+UPD.casino = function(d){
+  const p = d.split("|");
+  if(p[0]==="err"){ CS.busy=false; const g=$("#cs-go"); if(g) g.disabled=false; [0,1,2].forEach(i=>{const r=$("#rl"+i); if(r){clearInterval(r._t); r.classList.remove("spin");}}); return; }
+  if(p[0]==="money"){ CS.money=+p[1]; const m=$("#cs-m"); if(m) m.textContent=fmt(CS.money); return; }
+  if(p[0]==="roul"){
+    const n=+p[1], win=+p[2], idx=WHEEL.indexOf(n), seg=360/37;
+    const target = 360 - (idx*seg + seg/2);
+    CS.rot = CS.rot - (CS.rot % 360) + 360*6 + target;
+    $("#cs-w").style.transform = "rotate("+CS.rot+"deg)";
+    setTimeout(()=>{ CS.busy=false; $("#cs-n").textContent=n; $("#cs-n").style.color=n===0?"#7dff9c":RED.includes(n)?"#ff8b8b":"#fff";
+      $("#cs-r").innerHTML = win>0 ? '<span class="money">CASTIG '+fmt(win)+'!</span>' : '<span class="red">'+n+' - ai pierdut</span>'; $("#cs-go").disabled=false; }, 4100);
+  }
+  if(p[0]==="slot"){
+    const res=[+p[1],+p[2],+p[3]], win=+p[4];
+    res.forEach((v,i)=>setTimeout(()=>{ const r=$("#rl"+i); clearInterval(r._t); r.classList.remove("spin"); r.textContent=SLOT_E[v]; }, 700+i*500));
+    setTimeout(()=>{ CS.busy=false; $("#cs-r").innerHTML = win>0 ? '<span class="money">'+(res[0]===5&&res[1]===5&&res[2]===5?"JACKPOT! ":"")+'CASTIG '+fmt(win)+'!</span>' : '<span class="red">Ai pierdut</span>'; $("#cs-go").disabled=false; }, 1900);
+  }
+};
+
+/* ===================== EVENIMENTE DE LA SERVER ===================== */
+if(HAS_CEF){
+  cef.on("ui:hud", d=>hud(String(d)));
+  cef.on("ui:speedo", d=>speedo(String(d)));
+  cef.on("ui:notify", (t,a,b)=>notify(String(t),String(a),String(b)));
+  cef.on("ui:login", d=>{ LAST_LOGIN=String(d); if(String(d).charAt(0)==="0"){ MODS.login(LAST_LOGIN); return; } MOD="login"; setFocus(true); MODS.login(LAST_LOGIN); });
+  cef.on("ui:open", (m,d)=>{ if(MOD==="login") return; openMod(String(m), String(d==null?"":d)); });
+  cef.on("ui:data", (m,d)=>updMod(String(m), String(d==null?"":d)));
+  cef.on("ui:close", ()=>{ if(MOD && MOD!=="login"){ const m=MOD; MOD=null; root.innerHTML=""; setFocus(false); } else if(!MOD){ const dd=$("#death"); if(dd) root.innerHTML=""; } });
+  // anuntam serverul ca pagina e gata (repetam pana raspunde)
+  let ok = false, tries = 0;
+  cef.on("ui:hello", ()=>{ ok = true; });
+  const ping = ()=>{ if(ok || tries++ >= 20) return; emit("ui:ready","1"); setTimeout(ping, 1500); };
+  setTimeout(ping, 300);
+} else {
+  /* ---- previzualizare in browser (fara joc) ---- */
+  document.body.classList.add("focus");
+  hud("1|25400|180350|78|40|7|18|28|2|1|245|21:40");
+  speedo("1|142|64|870|1|1|0|Infernus|128400");
+  notify("money","PayDay","Salariu $3.200 · dobanda $180");
+  notify("success","Battle Pass","Ai deblocat TIER 8!");
+  const demo = {
+    inv:"12400|50000|0#0~1~0~3~Apa plata~1500;1~2~0~2~Sandvis~600;2~7~24~35~Desert Eagle~2000;3~8~0~4~Carne de vanat~4000;5~11~0~5000~Bani~6000;7~6~0~1~Trusa reparatii auto~3000",
+    shop:"24/7 Idlewood|2500#0~Apa plata~5~1;1~Sandvis~15~2;2~Trusa medicala~80~3;3~Telefon~60~0;4~Flori~25~5;5~Parasuta~100~0;6~Bata baseball~40~0;7~Tigari~10~4;8~Trusa auto~150~6",
+    ammu:"1|8000#0~Colt 45~600~cu 60 gloante~22;1~Desert Eagle~1800~cu 40 gloante~24;2~Shotgun~1500~cu 30 cartuse~25;3~MP5~2800~cu 120 gloante~29;4~Pusca~3500~cu 30 gloante~33;5~Vesta antiglont~400~100 armura~0",
+    dealer:"95000|1|2|3#Economice;Medii;Sport;Super-sport;SUV / Off-road;Moto si biciclete;Clasice / Lowrider#0~400~Landstalker~18000~4;1~401~Bravura~9000~0;2~404~Perennial~7000~0;3~411~Infernus~95000~3;4~415~Cheetah~70000~3;5~429~Banshee~60000~2;6~436~Previon~8000~0",
+    bank:"0|2500|180350|0|0|0|70000|0|Ion_Popescu|12",
+    bp:"2|41|7|180|300|0|245|7|0|150|100#"+Array.from({length:30},(_,i)=>(i+1)+"~"+(i%7)+"~Premiu "+(i+1)+"~"+((i+3)%7)+"~Premium "+(i+1)).join(";"),
+    fac:"1|Los Santos Police Department|LSPD|2641FE|245000|Ion_Popescu|7|1|0#Cadet~500;Ofiter~800;Sergent~1100;Locotenent~1500;Capitan~2000;Comandant~2500;Sef~3000#0~Ion_Popescu~7~1;4~Mihai_Rusu~3~1;9~Ana_Stan~1~0",
+    mdt:"Ion_Popescu|Sef#3~Vasile_Tanc~4~Jaf armat;8~Dorel_Bob~2~Viteza excesiva",
+    sb:"3|100|RPG Server",
+    admin:"6#2~Mihai_Rusu~Ma bug-uieste masina~-",
+    casino:"8500|0",
+    death:"1|Vasile_Tanc|Desert Eagle|74|2"
+  };
+  const bar = document.createElement("div");
+  bar.style.cssText = "position:fixed;left:10px;bottom:10px;display:flex;gap:6px;flex-wrap:wrap;z-index:5000";
+  Object.keys(demo).concat(["login","register"]).forEach(k=>{ const b=document.createElement("button"); b.textContent=k; b.onclick=()=>{
+    if(k==="login"||k==="register"){ LAST_LOGIN=(k==="login"?"1":"2")+"|Ion_Popescu|RPG Server|"; MOD="login"; MODS.login(LAST_LOGIN); return; }
+    MOD=null; openMod(k, demo[k]);
+    if(k==="sb") UPD.sb("0~Ion_Popescu~12~LSPD~2641FE~35;4~Mihai_Rusu~5~Civil~FFFFFF~90;9~Ana_Stan~3~SMURD~FF4F7B~170");
+    if(k==="admin") UPD.admin("0~Ion_Popescu~12~2500~35;4~Mihai_Rusu~5~900~90");
+  }; bar.appendChild(b); });
+  document.body.appendChild(bar);
+  window.act = function(){ console.log("act", Array.from(arguments).join("|")); };
+}
+</script>
+<div style="position:fixed;left:6px;bottom:2px;font-size:10px;opacity:.35;color:#fff;pointer-events:none">ui v1</div>
+</body>
+</html>
