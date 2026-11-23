@@ -940,12 +940,13 @@ MODS.admin = function(d){
 };
 UPD.admin = function(d){
   if(d.startsWith("R#")){ AD.rep = rows(d.slice(2)); }
+  else if(d.startsWith("L#")){ const q=d.split("#"); AD.ltype=+q[1]; AD.logs=rows(q.slice(2).join("#")); }
   else AD.list = AD.list.concat(rows(d));
   drawAdmin();
 };
 function drawAdmin(){
   const q = $("#ad-q") ? $("#ad-q").value : AD.q; AD.q = q;
-  const tabs = '<div class="tabs">'+["Jucatori ("+AD.list.length+")","Rapoarte ("+AD.rep.length+")"].map((t,i)=>'<div class="'+(AD.tab===i?"on":"")+'" onclick="AD.tab='+i+';drawAdmin()">'+t+'</div>').join("")+'</div>';
+  const tabs = '<div class="tabs">'+["Jucatori ("+AD.list.length+")","Rapoarte ("+AD.rep.length+")","Log-uri"].map((t,i)=>'<div class="'+(AD.tab===i?"on":"")+'" onclick="AD.tab='+i+';if('+i+'===2&&!AD.logs)act(\'admin\',\'logs\',-1);drawAdmin()">'+t+'</div>').join("")+'</div>';
   let body, foot = "";
   if(AD.tab===0){
     body = '<input id="ad-q" placeholder="Cauta jucator..." value="'+esc(q)+'" style="margin-bottom:12px"><table><thead><tr><th>ID</th><th>Nume</th><th>Level</th><th>Bani</th><th>Ping</th></tr></thead><tbody>'+
@@ -956,6 +957,13 @@ function drawAdmin(){
       foot = '<b style="margin-right:6px">'+esc(s[1])+'</b>'+b("goto","📍 Goto")+b("gethere","🧲 Aduce")+b("spec","👁️ Spec")+b("slap","👋 Slap")+b("freeze","🧊 Freeze")+b("unfreeze","🔥 Unfreeze")+b("heal","❤️ Heal")+
         '<input id="ad-r" placeholder="motiv" style="width:150px">'+b("kick","Kick","red")+(AD.lvl>=2?b("ban","Ban","red"):"");
     } else foot = '<span class="muted">Selecteaza un jucator. Admin level '+AD.lvl+'. /specoff = iesi din spectate.</span>';
+  } else if(AD.tab===2){
+    const LT = ["💵 Bani","🛡️ Admin","🛒 Cumparari","🔨 Licitatii"], LC = ["#33d17a","#ff4d5e","#3d8bff","#ffb020"];
+    const ago = t=>{ t=+t; return t<60?"acum":t<3600?Math.floor(t/60)+" min":t<86400?Math.floor(t/3600)+" h":Math.floor(t/86400)+" z"; };
+    const q = (AD.lq||"").toLowerCase();
+    body = '<div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap">'+['<button class="'+(AD.ltype===-1?"pri":"")+'" onclick="AD.logs=null;act(\'admin\',\'logs\',-1)">Toate</button>'].concat(LT.map((t,i)=>'<button class="'+(AD.ltype===i?"pri":"")+'" onclick="AD.logs=null;act(\'admin\',\'logs\','+i+')">'+t+'</button>')).join("")+
+      '<input id="ad-lq" placeholder="Cauta un nume..." value="'+esc(AD.lq||"")+'" style="flex:1;min-width:160px" oninput="AD.lq=this.value;drawAdmin();const n=$(\'#ad-lq\');n.focus();n.setSelectionRange(n.value.length,n.value.length)"></div>'+
+      (AD.logs ? '<table><tbody>'+AD.logs.filter(l=>!q||l[2].toLowerCase().includes(q)).map(l=>'<tr><td style="width:110px"><span class="badge" style="background:'+LC[+l[0]]+'22;color:'+LC[+l[0]]+'">'+(LT[+l[0]]||"")+'</span></td><td>'+esc(l[2])+'</td><td class="muted" style="width:70px;text-align:right">'+ago(l[1])+'</td></tr>').join("")+'</tbody></table>' : '<div class="muted">Se incarca...</div>');
   } else {
     body = AD.rep.length ? AD.rep.map(r=>'<div class="card" style="margin-bottom:8px;display:flex;gap:12px;align-items:center"><div style="flex:1"><b>'+esc(r[1])+'</b> <span class="muted">(id '+r[0]+')</span><div>'+esc(r[2])+'</div>'+(r[3]!=="-"?'<div class="muted" style="font-size:12px">preluat de '+esc(r[3])+'</div>':"")+'</div><button class="pri" onclick="act(\'admin\',\'ar\','+r[0]+')">Preia</button><button onclick="act(\'admin\',\'cr\','+r[0]+')">Inchide</button><button onclick="act(\'admin\',\'goto\','+r[0]+')">Goto</button></div>').join("") : '<div class="muted">Niciun raport activ. 🎉</div>';
   }
@@ -1617,7 +1625,7 @@ if(HAS_CEF){
     if(k==="sb") UPD.sb("0~Ion_Popescu~12~LSPD~2641FE~35;4~Mihai_Rusu~5~Civil~FFFFFF~90;9~Ana_Stan~3~SMURD~FF4F7B~170");
     if(k==="top") UPD.top("0#Ion_Popescu~9500000~29;Mihai_Rusu~4200000~101;Ana_Stan~1800000~12;Vasile_Tanc~900000~7;Dorel_Bob~400000~15");
     if(k==="bj") setTimeout(()=>UPD.bj("state|1000|0|-1|17|7500|#25;-1#0;45"),300);
-    if(k==="admin") UPD.admin("0~Ion_Popescu~12~2500~35;4~Mihai_Rusu~5~900~90");
+    if(k==="admin"){ UPD.admin("0~Ion_Popescu~12~2500~35;4~Mihai_Rusu~5~900~90"); UPD.admin("L#-1#0~120~Ion_Popescu -> Mihai_Rusu: $15000 (/pay);1~3600~AdmCmd: Dorel_Bob a primit kick de la Admin_Ion. Motiv: DM;2~7200~Ana_Stan a cumparat Lamborghini Diablo cu $285000;3~90000~[Licitatie] Ana_Stan a castigat Vila - Mulholland cu $950000!"); AD.tab=2; drawAdmin(); }
   }; bar.appendChild(b); });
   document.body.appendChild(bar);
   snow(true);
@@ -1626,6 +1634,6 @@ if(HAS_CEF){
   window.act = function(){ console.log("act", Array.from(arguments).join("|")); };
 }
 </script>
-<div style="position:fixed;left:6px;bottom:2px;font-size:10px;opacity:.35;color:#fff;pointer-events:none">ui v6</div>
+<div style="position:fixed;left:6px;bottom:2px;font-size:10px;opacity:.35;color:#fff;pointer-events:none">ui v7</div>
 </body>
 </html>
