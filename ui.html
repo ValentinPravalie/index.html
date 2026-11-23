@@ -424,6 +424,21 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
 #frost{position:fixed;inset:0;pointer-events:none;z-index:1;opacity:0;transition:opacity 2s;background:radial-gradient(ellipse at center,transparent 62%,rgba(200,230,255,.16) 100%)}
 #frost.on{opacity:1}
 #root,#dlgroot,#cardroot{position:relative;z-index:10}
+
+/* poveste (quest) */
+#story{position:fixed;inset:0;display:flex;flex-direction:column;justify-content:flex-end;background:linear-gradient(180deg,rgba(0,0,0,.55) 0,transparent 14%,transparent 55%,rgba(0,0,0,.85) 100%);animation:fade .4s}
+#story:before{content:"";position:fixed;left:0;right:0;top:0;height:70px;background:#000}
+#story .bx{position:relative;margin:0 auto 60px;width:min(980px,92vw);display:flex;gap:22px;align-items:flex-end}
+#story .pt{width:200px;height:280px;border-radius:22px;background:linear-gradient(160deg,#1d2433,#0c0f16);border:2px solid rgba(255,255,255,.12);position:relative;overflow:hidden;flex-shrink:0;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+#story .pt img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
+#story .pt .ph{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:90px}
+#story .tx{flex:1;background:rgba(10,12,18,.94);border:1px solid var(--line);border-radius:22px;padding:22px 26px;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+#story .nm{font-weight:900;font-size:20px;margin-bottom:10px}
+#story .body{font-size:16px;line-height:1.6;color:#e6ebf3;white-space:pre-wrap;min-height:120px}
+#story .bt{display:flex;gap:10px;justify-content:flex-end;margin-top:16px}
+#story .bt button{padding:13px 24px;font-size:15px}
+#questw{position:fixed;left:24px;top:110px;width:340px;background:var(--bg);border:1px solid rgba(61,139,255,.45);border-radius:18px;padding:14px 16px;box-shadow:0 10px 30px rgba(0,0,0,.4);animation:nin .4s}
+#questw .dots{display:flex;gap:4px;margin:8px 0} #questw .dots i{flex:1;height:5px;border-radius:3px;background:rgba(255,255,255,.12)} #questw .dots i.on{background:var(--blue)}
 </style>
 </head>
 <body>
@@ -464,6 +479,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
 <div id="notes"></div>
 <div id="kills"></div>
 <div id="tut" class="hidden"></div>
+<div id="questw" class="hidden"></div>
 <div id="prog" class="hidden"><b id="pg-t"></b> <span class="muted" id="pg-s"></span><div class="pb" id="pg-b"><div id="pg-f" style="width:0"></div></div></div>
 <div id="cardroot"></div>
 <div id="loading" class="hidden"><div class="brand">RPG<span>.</span><i>RO</i></div><div class="spin"></div><div class="tip" id="ld-tip"></div>
@@ -586,6 +602,7 @@ window.addEventListener("keydown", e=>{
   if(DLG) return;
   if(e.key==="Escape" || e.keyCode===27){
     if(MOD==="death"){ deathMini(); return; }
+    if(MOD==="story"){ if(!STY.two) act("story","a"); return; }
     closeMod(true);
   }
 });
@@ -1228,9 +1245,10 @@ function killfeed(d){
 }
 function tutorial(d){
   const p = d.split("|"), el = $("#tut");
-  if(p[0]==="0"){ el.classList.add("hidden"); return; }
+  if(p[0]==="0"){ el.classList.add("hidden"); placeQuest(); return; }
   const n=+p[0], tot=+p[1];
   el.classList.remove("hidden");
+  setTimeout(placeQuest, 50);
   el.innerHTML = '<div style="display:flex;justify-content:space-between"><b class="gold">🎓 Tutorial</b><span class="muted">pasul '+n+' / '+tot+'</span></div><div class="dots">'+Array.from({length:tot},(_,i)=>'<i class="'+(i<n?"on":"")+'"></i>').join("")+'</div><b style="font-size:15px">'+esc(p[2])+'</b><div style="font-size:13px;color:#d8dde6;margin-top:4px">'+esc(p[3])+'</div><div class="muted" style="font-size:11px;margin-top:6px">Premiu: $5.000 + Lada de Bronz · /tutorial opreste</div>';
 }
 
@@ -1547,12 +1565,39 @@ function snow(on){
 }
 window.addEventListener("resize", ()=>{ if(SNOW.flakes.length) snowInit(); });
 
+
+/* ===================== POVESTE (quest special) ===================== */
+const ST_COL = ["#3d8bff","#9b59b6","#ffb020"], ST_E = ["🕴️","🎩","📱"];
+let STY = {};
+MODS.story = function(d){
+  const p = d.split("|"), who = +p[0];
+  STY = {two: !!(p[5]&&p[5].length)};
+  const text = (p[3]||"").replace(/~/g,"\n");
+  root.innerHTML = '<div id="story"><div class="bx"><div class="pt" style="border-color:'+ST_COL[who]+'">'+(+p[2]>0?skinImg(p[2]):'<div class="ph">'+ST_E[who]+'</div>')+'</div>'+
+    '<div class="tx"><div class="nm" style="color:'+ST_COL[who]+'">'+esc(p[1])+'</div><div class="body" id="st-b"></div>'+
+    '<div class="bt">'+(STY.two?'<button class="red" onclick="act(\'story\',\'b\')">'+esc(p[5])+'</button><button class="pri" onclick="act(\'story\',\'a\')">'+esc(p[4])+'</button>':'<button class="pri" onclick="act(\'story\',\'a\')">'+esc(p[4]||"Continua")+'  →</button>')+'</div></div></div></div>';
+  // textul apare litera cu litera
+  const b = $("#st-b"); let i = 0; clearInterval(STY.t);
+  STY.full = text; STY.t = setInterval(()=>{ i += 2; b.textContent = text.slice(0,i); if(i>=text.length) clearInterval(STY.t); }, 18);
+  b.parentNode.onclick = e=>{ if(e.target.tagName!=="BUTTON"){ clearInterval(STY.t); b.textContent = text; } };
+};
+function placeQuest(){ const t=$("#tut"), q=$("#questw"); if(q) q.style.top = t.classList.contains("hidden") ? "110px" : (t.offsetHeight+124)+"px"; }
+function questW(d){
+  const p = d.split("|"), el = $("#questw");
+  if(p[0]==="0"){ el.classList.add("hidden"); return; }
+  const n=+p[2], tot=+p[3];
+  el.classList.remove("hidden");
+  placeQuest();
+  el.innerHTML = '<div style="display:flex;justify-content:space-between"><b style="color:#6aa8ff">🕵️ '+esc(p[0])+'</b><span class="muted">'+n+' / '+tot+'</span></div><div class="dots">'+Array.from({length:tot},(_,i)=>'<i class="'+(i<n?"on":"")+'"></i>').join("")+'</div><b style="font-size:15px">'+esc(p[1])+'</b><div style="font-size:13px;color:#d8dde6;margin-top:4px">'+esc(p[4])+'</div><div class="muted" style="font-size:11px;margin-top:6px">/stopquest = pauza</div>';
+}
+
 /* ===================== EVENIMENTE DE LA SERVER ===================== */
 if(HAS_CEF){
   cef.on("ui:hud", d=>{ loadingHide(); hud(String(d)); });
   cef.on("ui:speedo", d=>speedo(String(d)));
   cef.on("ui:prog", d=>progress(String(d)));
   cef.on("ui:snow", d=>snow(String(d)==="1"));
+  cef.on("ui:quest", d=>questW(String(d)));
   cef.on("ui:kill", d=>killfeed(String(d)));
   cef.on("ui:tut", d=>tutorial(String(d)));
   cef.on("ui:card", d=>showCard(String(d)));
@@ -1612,6 +1657,8 @@ if(HAS_CEF){
     craft:"7|4|1|3200#0~Carne afumata~3 kg carne de vanat~450~1~2;1~Haina de blana~3 blanuri~1500~1~0;2~Haina de lux~1 blana perfecta + 2 blanuri~3600~1~0;3~Conserva de peste~2 kg de peste~600~1~1",
     acc:"25400|1|0|-1|15#0~Sapca neagra~18926~1500~0~1;6~Ochelari soare negri~19006~1200~1~0;15~Ceas simplu~19039~4500~2~1;19~Bandana rosie~18891~600~0~0",
     furn:"25400|3|40#0~Pat dublu~1700~4500;4~Canapea~1702~3000;13~Televizor~1518~3000;29~Masa biliard~2964~12000",
+    story:"1|Don Salvatore|113|Deci Collins credea ca te poate cumpara...~~Ai ales familia. Familia nu uita.~Ia banii astia si un M4.|Sfarsit|",
+    story2:"2|Telefon|0|Telefonul suna. E Don Salvatore:~~Baiete... am auzit ca te-ai vazut cu cineva la debarcader.~~Pe cine tradezi?|Tradez MAFIA|Tradez FBI-ul",
     stats:"Ion_Popescu|Cetatean model|12|30|48|22|25400|180350|245|134|Pescar|3|LSPD - Sergent|[RO] Romanii|2|6|0|0|5|Bronze|7|6|29|0"
   };
   const bar = document.createElement("div");
@@ -1623,6 +1670,7 @@ if(HAS_CEF){
     if(k==="login"||k==="register"){ LAST_LOGIN=(k==="login"?"1":"2")+"|Ion_Popescu|RPG Server||37|100"; MOD="login"; MODS.login(LAST_LOGIN); return; }
     MOD=null; openMod(k, demo[k]);
     if(k==="sb") UPD.sb("0~Ion_Popescu~12~LSPD~2641FE~35;4~Mihai_Rusu~5~Civil~FFFFFF~90;9~Ana_Stan~3~SMURD~FF4F7B~170");
+    if(k==="story2"){ MOD=null; openMod("story", demo.story2); questW("Agentul sub acoperire|Alegerea|7|8|E momentul sa alegi de partea cui esti."); return; }
     if(k==="top") UPD.top("0#Ion_Popescu~9500000~29;Mihai_Rusu~4200000~101;Ana_Stan~1800000~12;Vasile_Tanc~900000~7;Dorel_Bob~400000~15");
     if(k==="bj") setTimeout(()=>UPD.bj("state|1000|0|-1|17|7500|#25;-1#0;45"),300);
     if(k==="admin"){ UPD.admin("0~Ion_Popescu~12~2500~35;4~Mihai_Rusu~5~900~90"); UPD.admin("L#-1#0~120~Ion_Popescu -> Mihai_Rusu: $15000 (/pay);1~3600~AdmCmd: Dorel_Bob a primit kick de la Admin_Ion. Motiv: DM;2~7200~Ana_Stan a cumparat Lamborghini Diablo cu $285000;3~90000~[Licitatie] Ana_Stan a castigat Vila - Mulholland cu $950000!"); AD.tab=2; drawAdmin(); }
@@ -1634,6 +1682,6 @@ if(HAS_CEF){
   window.act = function(){ console.log("act", Array.from(arguments).join("|")); };
 }
 </script>
-<div style="position:fixed;left:6px;bottom:2px;font-size:10px;opacity:.35;color:#fff;pointer-events:none">ui v7</div>
+<div style="position:fixed;left:6px;bottom:2px;font-size:10px;opacity:.35;color:#fff;pointer-events:none">ui v8</div>
 </body>
 </html>
