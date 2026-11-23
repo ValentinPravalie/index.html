@@ -72,13 +72,15 @@ body.cef.focus, body.cef.focus *{cursor:none !important}
 @keyframes blink{50%{opacity:.35}}
 
 /* ---------------- notificari ---------------- */
-#notes{position:fixed;left:24px;top:38%;width:340px;display:flex;flex-direction:column;gap:10px}
+#notes{position:fixed;left:50%;transform:translateX(-50%);top:84px;width:380px;display:flex;flex-direction:column;gap:10px}
 .note{background:var(--bg);border-left:4px solid var(--blue);border-radius:14px;padding:11px 14px;box-shadow:0 8px 24px rgba(0,0,0,.4);animation:nin .35s ease}
 .note.out{animation:nout .4s forwards}
 .note b{display:block;font-size:13px;margin-bottom:2px}
 .note span{font-size:13px;color:#d8dde6}
 .note.success{border-color:var(--green)} .note.error{border-color:var(--red)} .note.money{border-color:#5bea8f} .note.warning{border-color:var(--accent)} .note.vip{border-color:var(--purple)}
 @keyframes nin{from{opacity:0;transform:translateX(-40px)}to{opacity:1;transform:none}}
+#notes .note{animation:nin2 .35s ease} #notes .note.out{animation:nout2 .4s forwards}
+@keyframes nin2{from{opacity:0;transform:translateY(-20px)}} @keyframes nout2{to{opacity:0;transform:translateY(-20px)}}
 @keyframes nout{to{opacity:0;transform:translateX(-40px)}}
 
 /* ---------------- ferestre ---------------- */
@@ -337,7 +339,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
 #kills div{background:rgba(10,12,18,.8);padding:6px 12px;border-radius:10px;font-size:13px;font-weight:700;animation:nin .3s}
 #kills div.out{animation:nout .5s forwards}
 /* tutorial */
-#tut{position:fixed;left:24px;top:110px;width:330px;background:var(--bg);border:1px solid rgba(255,176,32,.4);border-radius:18px;padding:14px 16px;box-shadow:0 10px 30px rgba(0,0,0,.4);animation:nin .4s}
+#tut{position:fixed;left:24px;top:300px;width:330px;background:var(--bg);border:1px solid rgba(255,176,32,.4);border-radius:18px;padding:14px 16px;box-shadow:0 10px 30px rgba(0,0,0,.4);animation:nin .4s}
 #tut .dots{display:flex;gap:5px;margin:8px 0} #tut .dots i{flex:1;height:5px;border-radius:3px;background:rgba(255,255,255,.12)} #tut .dots i.on{background:var(--accent)}
 
 /* calendar */
@@ -437,7 +439,46 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
 #story .body{font-size:16px;line-height:1.6;color:#e6ebf3;white-space:pre-wrap;min-height:120px}
 #story .bt{display:flex;gap:10px;justify-content:flex-end;margin-top:16px}
 #story .bt button{padding:13px 24px;font-size:15px}
-#questw{position:fixed;left:24px;top:110px;width:340px;background:var(--bg);border:1px solid rgba(61,139,255,.45);border-radius:18px;padding:14px 16px;box-shadow:0 10px 30px rgba(0,0,0,.4);animation:nin .4s}
+
+/* ===== Operatiunea MDC ===== */
+#cine{position:fixed;inset:0;pointer-events:none;z-index:9}
+#cine .bar{position:absolute;left:0;right:0;height:0;background:#000;transition:height .7s ease}
+#cine .bar.t{top:0} #cine .bar.b{bottom:0}
+#cine.on .bar{height:12vh}
+#cine .sub{position:absolute;left:50%;bottom:4vh;transform:translateX(-50%);max-width:70vw;text-align:center;font-size:22px;color:#fff;text-shadow:0 2px 8px #000;opacity:0;transition:opacity .4s}
+#cine.on .sub{opacity:1}
+#cine .sub b{margin-right:8px}
+#dosar{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.65);animation:fade .4s}
+#dosar .pp{width:min(760px,92vw);background:linear-gradient(160deg,#e9dcc0,#d8c7a0);color:#2a2115;border-radius:8px;padding:28px 32px;box-shadow:0 30px 80px rgba(0,0,0,.7);position:relative;font-family:"Courier New",monospace;transform:rotate(-1deg)}
+#dosar .hd{display:flex;justify-content:space-between;border-bottom:2px dashed #7a6644;padding-bottom:10px;margin-bottom:16px;font-weight:900;letter-spacing:2px}
+#dosar .row{display:flex;gap:24px}
+#dosar .ph{width:170px;height:220px;background:#1b1b1b;border:6px solid #fff;box-shadow:0 6px 18px rgba(0,0,0,.4);transform:rotate(2deg);position:relative;overflow:hidden;flex-shrink:0}
+#dosar .ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
+#dosar dl{margin:0;font-size:15px;line-height:1.55} #dosar dt{font-weight:900;text-transform:uppercase;font-size:12px;color:#6b5636;margin-top:6px} #dosar dd{margin:0}
+#dosar .stamp{position:absolute;right:30px;top:70px;border:5px solid #c0392b;color:#c0392b;font-weight:900;font-size:30px;padding:6px 14px;transform:rotate(14deg);opacity:.85;letter-spacing:3px}
+#dosar .gang{display:flex;gap:8px;margin-top:14px} #dosar .gang div{width:56px;height:70px;background:#222;border:3px solid #fff;position:relative;overflow:hidden} #dosar .gang img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
+#dosar button{margin-top:18px;float:right;background:#2a2115;color:#f3e6c8;border:0;border-radius:6px;padding:12px 22px;font-weight:700;font-size:15px;cursor:pointer}
+#qte{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(circle,rgba(120,0,0,.25),rgba(0,0,0,.75));animation:fade .25s}
+#qte .ttl{font-size:26px;font-weight:900;color:#fff;margin-bottom:24px;text-shadow:0 2px 10px #000}
+#qte .key{width:130px;height:130px;border-radius:24px;background:#141820;border:3px solid #ffb020;display:flex;align-items:center;justify-content:center;font-size:64px;font-weight:900;color:#ffb020;position:relative}
+#qte .key svg{position:absolute;inset:-12px;width:154px;height:154px;transform:rotate(-90deg)}
+#qte .key circle{fill:none;stroke:#ffb020;stroke-width:6;stroke-linecap:round}
+#qte .key.ok{border-color:#2ecc71;color:#2ecc71;transform:scale(1.08);transition:transform .1s}
+#qte .key.bad{border-color:#e74c3c;color:#e74c3c;animation:shake .3s}
+#qte .dots{display:flex;gap:8px;margin-top:22px} #qte .dots i{width:16px;height:16px;border-radius:50%;background:rgba(255,255,255,.15)} #qte .dots i.on{background:#2ecc71}
+#qte .hint{margin-top:14px;color:#c9cfda;font-size:14px}
+@keyframes shake{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+#intg{position:fixed;right:40px;top:50%;transform:translateY(-50%);width:420px;background:rgba(10,12,18,.95);border:1px solid rgba(231,76,60,.5);border-radius:22px;padding:20px 22px;box-shadow:0 20px 60px rgba(0,0,0,.7);animation:fade .4s}
+#intg .top{display:flex;gap:14px;align-items:center}
+#intg .av{width:70px;height:90px;border-radius:14px;background:#1d2433;position:relative;overflow:hidden;border:2px solid #e74c3c} #intg .av img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
+#intg .mt{margin-top:10px} #intg .mt span{display:flex;justify-content:space-between;font-size:12px;color:#aeb6c4;margin-bottom:4px}
+#intg .pb{height:10px;border-radius:6px;background:rgba(255,255,255,.08);overflow:hidden} #intg .pb div{height:100%;transition:width .5s}
+#intg .say{margin:16px 0;background:#161b26;border-radius:14px;padding:14px 16px;font-size:15px;line-height:1.5;color:#f0f3f8;min-height:48px;border-left:4px solid #e74c3c}
+#intg .acts{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+#intg .acts button{padding:11px 10px;text-align:left;font-size:14px;line-height:1.25}
+#intg .acts button small{display:block;font-size:11px;opacity:.7;font-weight:500}
+#intg .acts button:disabled{opacity:.35;cursor:default}
+#questw{position:fixed;left:24px;top:300px;width:340px;background:var(--bg);border:1px solid rgba(61,139,255,.45);border-radius:18px;padding:14px 16px;box-shadow:0 10px 30px rgba(0,0,0,.4);animation:nin .4s}
 #questw .dots{display:flex;gap:4px;margin:8px 0} #questw .dots i{flex:1;height:5px;border-radius:3px;background:rgba(255,255,255,.12)} #questw .dots i.on{background:var(--blue)}
 </style>
 </head>
@@ -480,6 +521,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
 <div id="kills"></div>
 <div id="tut" class="hidden"></div>
 <div id="questw" class="hidden"></div>
+<div id="cine"><div class="bar t"></div><div class="bar b"></div><div class="sub" id="cine-s"></div></div>
 <div id="prog" class="hidden"><b id="pg-t"></b> <span class="muted" id="pg-s"></span><div class="pb" id="pg-b"><div id="pg-f" style="width:0"></div></div></div>
 <div id="cardroot"></div>
 <div id="loading" class="hidden"><div class="brand">RPG<span>.</span><i>RO</i></div><div class="spin"></div><div class="tip" id="ld-tip"></div>
@@ -603,6 +645,9 @@ window.addEventListener("keydown", e=>{
   if(e.key==="Escape" || e.keyCode===27){
     if(MOD==="death"){ deathMini(); return; }
     if(MOD==="story"){ if(!STY.two) act("story","a"); return; }
+    if(MOD==="dosar"){ act("dosar","ok"); return; }
+    if(MOD==="interog") return;
+    if(MOD==="qte"){ qteEnd(false); return; }
     closeMod(true);
   }
 });
@@ -1567,7 +1612,7 @@ window.addEventListener("resize", ()=>{ if(SNOW.flakes.length) snowInit(); });
 
 
 /* ===================== POVESTE (quest special) ===================== */
-const ST_COL = ["#3d8bff","#9b59b6","#ffb020"], ST_E = ["🕴️","🎩","📱"];
+const ST_COL = ["#3d8bff","#9b59b6","#ffb020","#e74c3c","#8fa3bf"], ST_E = ["🕴️","🎩","📱","😈","🎬"];
 let STY = {};
 MODS.story = function(d){
   const p = d.split("|"), who = +p[0];
@@ -1581,14 +1626,84 @@ MODS.story = function(d){
   STY.full = text; STY.t = setInterval(()=>{ i += 2; b.textContent = text.slice(0,i); if(i>=text.length) clearInterval(STY.t); }, 18);
   b.parentNode.onclick = e=>{ if(e.target.tagName!=="BUTTON"){ clearInterval(STY.t); b.textContent = text; } };
 };
-function placeQuest(){ const t=$("#tut"), q=$("#questw"); if(q) q.style.top = t.classList.contains("hidden") ? "110px" : (t.offsetHeight+124)+"px"; }
+function placeQuest(){ const t=$("#tut"), q=$("#questw"); if(q) q.style.top = t.classList.contains("hidden") ? "300px" : (t.offsetHeight+314)+"px"; }
+/* ===================== OPERATIUNEA MDC ===================== */
+function cine(d){
+  const p = String(d).split("|"), el = $("#cine");
+  if(p[0]==="0"){ el.classList.remove("on"); return; }
+  const col = p[1]==="MDC" ? "#ff5a4a" : (p[1]==="LSPD" ? "#5aa0ff" : "#ffb020");
+  const nar = p[1]==="Misiune";
+  $("#cine-s").innerHTML = (nar ? '' : '<b style="color:'+col+'">'+esc(p[1])+':</b>') + '<span'+(nar?' style="font-style:italic;color:#ffd27a"':'')+'>'+esc(p.slice(2).join(" "))+'</span>';
+  el.classList.add("on");
+}
+MODS.dosar = function(d){
+  const sk = +d || 126;
+  root.innerHTML = '<div id="dosar"><div class="pp"><div class="hd"><span>F.B.I. - DOSAR #MDC-1137</span><span>STRICT SECRET</span></div>'+
+    '<div class="stamp">VIU</div><div class="row"><div class="ph">'+skinImg(sk)+'</div><dl>'+
+    '<dt>Nume</dt><dd>"MDC" - Mafiotul</dd><dt>Grupare</dt><dd>Clanul MDC - 12 membri inarmati</dd>'+
+    '<dt>Fapte</dt><dd>Trafic de arme, spalare de bani prin clubul <b>Velvet</b>, 3 politisti raniti saptamana asta</dd>'+
+    '<dt>Legaturi</dt><dd>Un ofiter LSPD (neidentificat)</dd><dt>Ordin</dt><dd><b>Capturare. Il vrem VIU.</b></dd></dl></div>'+
+    '<div class="gang">'+[124,125,127,164,165].map(s=>'<div>'+skinImg(s)+'</div>').join("")+'</div>'+
+    '<button onclick="act(\'dosar\',\'ok\')">Accept misiunea  →</button><div style="clear:both"></div></div></div>';
+};
+let QTE = null;
+const QK = ["W","A","S","D","E","F","Q","R","X","C"];
+MODS.qte = function(d){
+  const p = String(d).split("|"), n = +p[0]||6, ms = +p[1]||1100;
+  QTE = {seq:Array.from({length:n},()=>QK[Math.floor(Math.random()*QK.length)]), i:0, ms, t:null, done:false};
+  root.innerHTML = '<div id="qte"><div class="ttl">PUNE-L LA PAMANT!</div><div class="key" id="qk"><svg viewBox="0 0 154 154"><circle id="qc" cx="77" cy="77" r="70"/></svg><span id="qkl"></span></div>'+
+    '<div class="dots">'+QTE.seq.map(()=>'<i></i>').join("")+'</div><div class="hint">Apasa tasta afisata inainte sa se termine cercul</div></div>';
+  qteStep();
+};
+function qteStep(){
+  if(!QTE || QTE.done) return;
+  const k = $("#qk"); if(!k) return; k.className = "key"; $("#qkl").textContent = QTE.seq[QTE.i];
+  const c = $("#qc"), L = 2*Math.PI*70; c.style.transition = "none"; c.style.strokeDasharray = L; c.style.strokeDashoffset = 0;
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{ c.style.transition = "stroke-dashoffset "+QTE.ms+"ms linear"; c.style.strokeDashoffset = L; }));
+  clearTimeout(QTE.t); QTE.t = setTimeout(()=>qteEnd(false), QTE.ms);
+}
+function qteEnd(ok){
+  if(!QTE || QTE.done) return;
+  QTE.done = true; clearTimeout(QTE.t);
+  const k = $("#qk"); if(k) k.className = "key "+(ok?"ok":"bad");
+  setTimeout(()=>{ act("qte", ok?"ok":"fail"); }, ok?250:450);
+}
+window.addEventListener("keydown", e=>{
+  if(MOD!=="qte" || !QTE || QTE.done) return;
+  const key = (e.key||"").toUpperCase();
+  if(key.length!==1) return;
+  if(key===QTE.seq[QTE.i]){
+    clearTimeout(QTE.t);
+    $("#qk").className = "key ok";
+    document.querySelectorAll("#qte .dots i")[QTE.i].classList.add("on");
+    QTE.i++;
+    if(QTE.i>=QTE.seq.length) qteEnd(true); else setTimeout(qteStep, 120);
+  } else qteEnd(false);
+});
+function intgRender(d){
+  const p = String(d).split("|"), rez=+p[0], st=Math.min(100,+p[1]), fl=+p[3], money=+p[4];
+  const bar = (lbl, v, col)=>'<div class="mt"><span><b>'+lbl+'</b><b>'+v+'%</b></span><div class="pb"><div style="width:'+v+'%;background:'+col+'"></div></div></div>';
+  return '<div class="top"><div class="av">'+skinImg(126)+'</div><div style="flex:1"><b style="font-size:19px;color:#ff6b5b">MDC</b><div class="muted" style="font-size:12px">legat de scaun - subsolul safehouse-ului</div>'+
+    bar("Rezistenta", rez, "linear-gradient(90deg,#e74c3c,#ff8a65)")+bar("Stres", st, st>=75?"#ff3b30":"linear-gradient(90deg,#f1c40f,#e67e22)")+'</div></div>'+
+    '<div class="say">'+esc(p[2]||"")+'</div>'+
+    '<div class="acts">'+
+    '<button onclick="act(\'interog\',\'calm\')">🗣️ Vorbesti calm<small>-rezistenta, -stres</small></button>'+
+    '<button onclick="act(\'interog\',\'threat\')">😠 Il ameninti<small>--rezistenta, +stres</small></button>'+
+    '<button class="red" onclick="act(\'interog\',\'hit\')">👊 Il lovesti<small>---rezistenta, ++stres</small></button>'+
+    '<button onclick="act(\'interog\',\'bribe\')" '+((fl&1)||money<30000?"disabled":"")+'>💵 Mita $30.000<small>o singura data</small></button>'+
+    '<button style="grid-column:span 2" onclick="act(\'interog\',\'photos\')" '+((fl&2)?"disabled":"")+'>📸 Ii arati pozele de la docuri<small>o singura data</small></button>'+
+    '</div><div class="muted" style="font-size:11px;margin-top:10px">Scade-i rezistenta la 0. Daca stresul ajunge la 100%, lesina si isi revine mai incapatanat.</div>';
+}
+MODS.interog = function(d){ root.innerHTML = '<div id="intg">'+intgRender(d)+'</div>'; };
+UPD.interog = function(d){ const el=$("#intg"); if(el) el.innerHTML = intgRender(d); };
+
 function questW(d){
   const p = d.split("|"), el = $("#questw");
   if(p[0]==="0"){ el.classList.add("hidden"); return; }
   const n=+p[2], tot=+p[3];
   el.classList.remove("hidden");
   placeQuest();
-  el.innerHTML = '<div style="display:flex;justify-content:space-between"><b style="color:#6aa8ff">🕵️ '+esc(p[0])+'</b><span class="muted">'+n+' / '+tot+'</span></div><div class="dots">'+Array.from({length:tot},(_,i)=>'<i class="'+(i<n?"on":"")+'"></i>').join("")+'</div><b style="font-size:15px">'+esc(p[1])+'</b><div style="font-size:13px;color:#d8dde6;margin-top:4px">'+esc(p[4])+'</div><div class="muted" style="font-size:11px;margin-top:6px">/stopquest = pauza</div>';
+  el.innerHTML = '<div style="display:flex;justify-content:space-between"><b style="color:'+(p[0].indexOf("MDC")>=0?"#ff6b5b":"#6aa8ff")+'">🕵️ '+esc(p[0])+'</b><span class="muted">'+n+' / '+tot+'</span></div><div class="dots">'+Array.from({length:tot},(_,i)=>'<i class="'+(i<n?"on":"")+'"></i>').join("")+'</div><b style="font-size:15px">'+esc(p[1])+'</b><div style="font-size:13px;color:#d8dde6;margin-top:4px">'+esc(p[4])+'</div><div class="muted" style="font-size:11px;margin-top:6px">/stopquest = pauza'+(p[0].indexOf("MDC")>=0?' · /echipamdc [id] = co-op':'')+'</div>';
 }
 
 /* ===================== EVENIMENTE DE LA SERVER ===================== */
@@ -1596,6 +1711,7 @@ if(HAS_CEF){
   cef.on("ui:hud", d=>{ loadingHide(); hud(String(d)); });
   cef.on("ui:speedo", d=>speedo(String(d)));
   cef.on("ui:prog", d=>progress(String(d)));
+  cef.on("ui:cine", d=>cine(String(d)));
   cef.on("ui:snow", d=>snow(String(d)==="1"));
   cef.on("ui:quest", d=>questW(String(d)));
   cef.on("ui:kill", d=>killfeed(String(d)));
@@ -1658,6 +1774,7 @@ if(HAS_CEF){
     acc:"25400|1|0|-1|15#0~Sapca neagra~18926~1500~0~1;6~Ochelari soare negri~19006~1200~1~0;15~Ceas simplu~19039~4500~2~1;19~Bandana rosie~18891~600~0~0",
     furn:"25400|3|40#0~Pat dublu~1700~4500;4~Canapea~1702~3000;13~Televizor~1518~3000;29~Masa biliard~2964~12000",
     story:"1|Don Salvatore|113|Deci Collins credea ca te poate cumpara...~~Ai ales familia. Familia nu uita.~Ia banii astia si un M4.|Sfarsit|",
+    dosar:"126", qte:"6|1150", interog:"64|48|Ma ameninti pe MINE? Stii cati ca tine am ingropat?|1|50000", cine:"1|MDC|Nimeni nu ma atinge pe mine. NIMENI.",
     story2:"2|Telefon|0|Telefonul suna. E Don Salvatore:~~Baiete... am auzit ca te-ai vazut cu cineva la debarcader.~~Pe cine tradezi?|Tradez MAFIA|Tradez FBI-ul",
     stats:"Ion_Popescu|Cetatean model|12|30|48|22|25400|180350|245|134|Pescar|3|LSPD - Sergent|[RO] Romanii|2|6|0|0|5|Bronze|7|6|29|0"
   };
@@ -1668,6 +1785,7 @@ if(HAS_CEF){
       DLGBUF = k==="dialog-list" ? "Masina 1 - {33AA33}Infernus\nMasina 2 - {FF6347}Banshee\nVinde masina\nGPS" : k==="dialog-input" ? "{FFFFFF}Scrie ID-ul skin-ului dorit (1 - 311).\nPret: {33AA33}$500" : "Masina\tStare\tKm\n{FFD700}Infernus\t{33AA33}Spawnata\t1.2 km\nBanshee\tParcata\t44.0 km";
       dlgShow("5|"+(k==="dialog-list"?2:k==="dialog-input"?1:5)+"|Masinile tale|Alege|Inchide"); return; }
     if(k==="login"||k==="register"){ LAST_LOGIN=(k==="login"?"1":"2")+"|Ion_Popescu|RPG Server||37|100"; MOD="login"; MODS.login(LAST_LOGIN); return; }
+    if(k==="cine"){ const on=$("#cine").classList.contains("on"); cine(on?"0":demo.cine); questW("Operatiunea MDC|Bataia|3|7|Ascunde-te la punctul marcat si urmareste ce se intampla."); return; }
     MOD=null; openMod(k, demo[k]);
     if(k==="sb") UPD.sb("0~Ion_Popescu~12~LSPD~2641FE~35;4~Mihai_Rusu~5~Civil~FFFFFF~90;9~Ana_Stan~3~SMURD~FF4F7B~170");
     if(k==="story2"){ MOD=null; openMod("story", demo.story2); questW("Agentul sub acoperire|Alegerea|7|8|E momentul sa alegi de partea cui esti."); return; }
@@ -1682,6 +1800,6 @@ if(HAS_CEF){
   window.act = function(){ console.log("act", Array.from(arguments).join("|")); };
 }
 </script>
-<div style="position:fixed;left:6px;bottom:2px;font-size:10px;opacity:.35;color:#fff;pointer-events:none">ui v8</div>
+<div style="position:fixed;left:6px;bottom:2px;font-size:10px;opacity:.35;color:#fff;pointer-events:none">ui v10</div>
 </body>
 </html>
